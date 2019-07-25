@@ -1,0 +1,10 @@
+[GENERAL]
+#List absolute path name
+picture_path = /path/to/push/to
+db_path = path/to/db
+p_in = /path/to/pull/from
+
+[DEVELOPMENT]
+#Quick Entry bypasses the manual input section (but still adds photo to DB)
+quickentry = yes
+
