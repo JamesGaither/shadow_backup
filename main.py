@@ -8,6 +8,7 @@ import shutil
 from datetime import datetime
 from PIL import Image
 from pathlib import Path
+import subprocess
 
 # custom modules
 from modules.dbhandler import dbhandler
@@ -16,14 +17,21 @@ from modules.dbhandler import dbhandler
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--process", action="store_true",
                     help="reads all photos for processing")
+parser.add_argument("-a", "--archive", action="store_true",
+                    help="pushes non-archived photos to archive")
 args = parser.parse_args()
 
-# Initial Set-up
+# Pull Config info
 config = configparser.ConfigParser()
 config.read('config/main.ini')
 picpath = config['GENERAL']['picture_path']
 p_in = config['GENERAL']['p_in']
 db = dbhandler(Path(config['GENERAL']['db_path']))
+sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
+vol_size = config['ARCHIVE']['vol_size']
+archive_path = Path(config['ARCHIVE']['path'])
+archive_pw = config['ARCHIVE']['password']
+archive_out = config['ARCHIVE']['output']
 allpics = []
 
 # Functions
@@ -76,6 +84,24 @@ def process():
             os.makedirs(filepath)
         shutil.move(pic, os.path.join(filepath, new_name))
 
+# Push unprocessed photos to archive (WIP)     
+def archive():
+    # Note: WIP - Not perfect and needs some major work. Expect changes!
+    archive_command = r'"{}" a -v"{}" -t7z -mhe=on -p"{}" "{}" "{}"'.format(sevenz_path, vol_size, archive_pw, archive_out, archive_path)
+    #subprocess.run(archive_command, shell=True)
+    
+    for subdir, dirs, file in os.walk(archive_path):
+        for archive_picture in file:
+            db.insert_archive(archive_picture, archive_out)
+
+
+
+
+
+
+
 if __name__ == '__main__':
     if args.process:
         process()
+    if args.archive:
+        archive()
