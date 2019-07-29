@@ -7,24 +7,25 @@ class dbhandler:
 
         self.c.execute('''
                 CREATE TABLE if NOT EXISTS filepath (
-                filepath_id integer PRIMARY KEY AUTOINCREMENT,
+                filepath_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 filepath TEXT UNIQUE)''')
         self.c.execute('''
                 CREATE TABLE if NOT EXISTS tag (
-                tag_id integer PRIMARY KEY AUTOINCREMENT,
+                tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 tag TEXT UNIQUE)''')
         self.c.execute('''
                 CREATE TABLE if NOT EXISTS photo (
-                photo_id integer PRIMARY KEY AUTOINCREMENT,
-                name text,
-                hash text UNIQUE,
-                date_taken text,
-                filepath_id integer,
+                photo_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                hash TEXT UNIQUE,
+                date_taken TEXT,
+                filepath_id INTEGER,
+                archived BOOLEAN,
                 FOREIGN KEY (filepath_id) REFERENCES filepath(filepath_id))''')
         self.c.execute('''
                 CREATE TABLE if NOT EXISTS photo_tag (
-                photo_id integer,
-                tag_id integer,
+                photo_id INTEGER,
+                tag_id INTEGER,
                 FOREIGN KEY (photo_id) REFERENCES photo(photo_id),
                 FOREIGN KEY (tag_id) REFERENCES tag(tag_id),
                 PRIMARY KEY (photo_id, tag_id))''')

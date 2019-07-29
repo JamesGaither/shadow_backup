@@ -40,7 +40,7 @@ def process():
     for pic in allpics:
         original_name, extension = os.path.splitext(pic)
         hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
-        new_name = hash + extension
+        new_name = hash + extension.lower()
         try:
             date_taken = datetime.strptime(get_date_taken(pic),
                                            '%Y:%m:%d %H:%M:%S')
@@ -51,6 +51,7 @@ def process():
         except:
             date_taken = None
             filepath = os.path.join(picpath, 'nodate')
+
         # Check if picture has been processed
         if db.hashcheck(hash):
             print(original_name, "has been processed before. skipping")
@@ -69,6 +70,7 @@ def process():
             for tag in tag_list:
                 tag_id = db.insert_tag(tag)
                 db.insert_phototag(photo_id, tag_id)
+
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
