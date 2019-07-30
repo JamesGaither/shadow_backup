@@ -31,7 +31,7 @@ sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
 vol_size = config['ARCHIVE']['vol_size']
 archive_path = Path(config['ARCHIVE']['path'])
 archive_pw = config['ARCHIVE']['password']
-archive_out = config['ARCHIVE']['output']
+archive_out = Path(config['ARCHIVE']['output'])
 allpics = []
 
 # Functions
@@ -88,11 +88,11 @@ def process():
 def archive():
     # Note: WIP - Not perfect and needs some major work. Expect changes!
     archive_command = r'"{}" a -v"{}" -t7z -mhe=on -p"{}" "{}" "{}"'.format(sevenz_path, vol_size, archive_pw, archive_out, archive_path)
-    #subprocess.run(archive_command, shell=True)
+    subprocess.run(archive_command)
     
     for subdir, dirs, file in os.walk(archive_path):
         for archive_picture in file:
-            db.insert_archive(archive_picture, archive_out)
+            db.insert_archive(archive_picture, str(archive_out))
 
 
 

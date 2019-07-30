@@ -60,7 +60,7 @@ class dbhandler:
         self.c.execute('''
                 INSERT into photo
                 (name, hash, date_taken, filepath_id, incloud)
-                VALUES(?,?,?,?)
+                VALUES(?,?,?,?,?)
                 ''', (name, hash, date_taken, filepath_id, 0))
 
         self.conn.commit()
@@ -87,6 +87,19 @@ class dbhandler:
 
     #WIP archiving photos
     def insert_archive(self, photo_name, archive_path):
+        self.c.execute('''
+                INSERT or IGNORE into archivepath(archive_path)
+                VALUES(?)''', (archive_path,))
+        self.conn.commit()
+        self.c.execute('''
+                SELECT archive_id from archivepath WHERE archive_path=?
+                ''', (archive_path,))
+        archive_id = self.c.fetchone()[0]
+        photo_hash = photo_name.split(".")[0]
+        self.c.execute('''
+                UPDATE photo SET archive_id=?
+                WHERE name=?''', (archive_id, photo_name))
+        self.conn.commit()
         return
 
 #WIP to pull photos where tag is input
@@ -102,4 +115,4 @@ class dbhandler:
 
 # Strictly for testing below
 if __name__ == '__main__':
-    db = dbhandler(r'c:\Users\james.gaither\projects\shadow_backup\test.db')
+    db = dbhandler()
