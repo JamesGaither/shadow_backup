@@ -34,9 +34,9 @@ archive_pw = config['ARCHIVE']['password']
 archive_out = Path(config['ARCHIVE']['output'])
 allpics = []
 
-# Functions
+###Build out Functions###
 
-
+# Pulls a date taken from photo (if any)
 def get_date_taken(path):
     return Image.open(path)._getexif()[36867]
 
@@ -84,17 +84,20 @@ def process():
             os.makedirs(filepath)
         shutil.move(pic, os.path.join(filepath, new_name))
 
-# Push unprocessed photos to archive (WIP)     
+# Push unprocessed photos to archive (WIP-likely to change and evolve with time)     
 def archive():
-    # Note: WIP - Not perfect and needs some major work. Expect changes!
-    archive_command = r'"{}" a -v"{}" -t7z -mhe=on -p"{}" "{}" "{}"'.format(sevenz_path, vol_size, archive_pw, archive_out, archive_path)
+    nonarchived_files = db.archive_query()
+    for photo_path in nonarchived_files:
+        shutil.copy(photo_path, Path(config['TEST']['temp_folder']))
+   
+
+    archive_command = r'"{}" a -v"{}" -t7z -mhe=on -p"{}" "{}" "{}"'.format(sevenz_path, vol_size, archive_pw, archive_out, Path(config['TEST']['temp_folder']))
     subprocess.run(archive_command)
     
+
     for subdir, dirs, file in os.walk(archive_path):
         for archive_picture in file:
             db.insert_archive(archive_picture, str(archive_out))
-
-
 
 
 
@@ -105,3 +108,4 @@ if __name__ == '__main__':
         process()
     if args.archive:
         archive()
+        

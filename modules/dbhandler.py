@@ -1,4 +1,6 @@
+#A list of DB handling functions
 import sqlite3
+import os
 
 class dbhandler:
     def __init__(self, db_path):
@@ -102,6 +104,26 @@ class dbhandler:
         self.conn.commit()
         return
 
+    # Pull a single filepath
+    def pull_filepath(self, filepath_id):
+        self.c.execute('''
+        SELECT filepath from filepath
+        WHERE filepath_id=?''', (filepath_id,))
+        return self.c.fetchone()[0]
+
+    #WIP
+    def archive_query(self):
+        nonarchived_files = []
+        self.c.execute('''
+                SELECT filepath_id, name from photo
+                WHERE archive_id IS null''')
+        for filepathid, photo_name in self.c.fetchall():
+            filepath = self.pull_filepath(filepathid)
+            print('filepath:', filepath)
+            print('photo name:', photo_name)
+            nonarchived_files.append(os.path.join(filepath, photo_name))
+        return nonarchived_files
+            
 #WIP to pull photos where tag is input
     def pull_tag(self, search_tags):
         query = f'''
@@ -115,4 +137,5 @@ class dbhandler:
 
 # Strictly for testing below
 if __name__ == '__main__':
-    db = dbhandler()
+    db = dbhandler('c:/users/james.gaither/projects/shadow_backup/test.db')
+    db.archive_query()
