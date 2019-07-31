@@ -88,8 +88,8 @@ def process():
 # Push unprocessed photos to archive (WIP-likely to change and evolve with time)     
 def archive():
     nonarchived_files = db.archive_query()
-    #for photo_path in nonarchived_files:
-    #    shutil.copy(photo_path, Path(config['TEST']['temp_folder']))
+    for photo_path in nonarchived_files:
+        shutil.copy(photo_path, Path(config['TEST']['temp_folder']))
     os.path.join(archive_out, archive_name)
     archive_command = (r'"{}" a -v"{}" -t7z -mhe=on -mx9 -p"{}" "{}" "{}"'
                        .format(sevenz_path, vol_size, archive_pw, archive_out,
