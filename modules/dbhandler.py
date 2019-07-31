@@ -119,8 +119,6 @@ class dbhandler:
                 WHERE archive_id IS null''')
         for filepathid, photo_name in self.c.fetchall():
             filepath = self.pull_filepath(filepathid)
-            print('filepath:', filepath)
-            print('photo name:', photo_name)
             nonarchived_files.append(os.path.join(filepath, photo_name))
         return nonarchived_files
             

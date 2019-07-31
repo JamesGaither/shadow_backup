@@ -29,9 +29,11 @@ p_in = config['GENERAL']['p_in']
 db = dbhandler(Path(config['GENERAL']['db_path']))
 sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
 vol_size = config['ARCHIVE']['vol_size']
-archive_path = Path(config['ARCHIVE']['path'])
+archive_path = Path(config['ARCHIVE']['input'])
 archive_pw = config['ARCHIVE']['password']
 archive_out = Path(config['ARCHIVE']['output'])
+
+archive_name = "1"   #Temp solution
 allpics = []
 
 ###Build out Functions###
@@ -62,7 +64,6 @@ def process():
 
         # Check if picture has been processed
         if db.hashcheck(hash):
-            print(original_name, "has been processed before. skipping")
             continue
 
         # Write updates to DB
@@ -87,20 +88,16 @@ def process():
 # Push unprocessed photos to archive (WIP-likely to change and evolve with time)     
 def archive():
     nonarchived_files = db.archive_query()
-    for photo_path in nonarchived_files:
-        shutil.copy(photo_path, Path(config['TEST']['temp_folder']))
-   
-
-    archive_command = r'"{}" a -v"{}" -t7z -mhe=on -p"{}" "{}" "{}"'.format(sevenz_path, vol_size, archive_pw, archive_out, Path(config['TEST']['temp_folder']))
+    #for photo_path in nonarchived_files:
+    #    shutil.copy(photo_path, Path(config['TEST']['temp_folder']))
+    os.path.join(archive_out, archive_name)
+    archive_command = (r'"{}" a -v"{}" -t7z -mhe=on -mx9 -p"{}" "{}" "{}"'
+                       .format(sevenz_path, vol_size, archive_pw, archive_out,
+                        Path(config['TEST']['temp_folder'])))
     subprocess.run(archive_command)
-    
-
     for subdir, dirs, file in os.walk(archive_path):
         for archive_picture in file:
             db.insert_archive(archive_picture, str(archive_out))
-
-
-
 
 
 if __name__ == '__main__':
