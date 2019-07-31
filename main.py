@@ -19,6 +19,8 @@ parser.add_argument("-p", "--process", action="store_true",
                     help="reads all photos for processing")
 parser.add_argument("-a", "--archive", action="store_true",
                     help="pushes non-archived photos to archive")
+parser.add_argument("-v", "--verbose", action="store_true",
+                    help="prints detailed information to terminal")
 args = parser.parse_args()
 
 # Pull Config info
@@ -83,10 +85,15 @@ def process():
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
+        if args.verbose:
+            print(f"Moving{pic} to {filepath}")
         shutil.move(pic, os.path.join(filepath, new_name))
+
 
 # Push unprocessed photos to archive (WIP-likely to change and evolve with time)     
 def archive():
+    if args.verbose:
+        print("Begin archiving")
     nonarchived_files = db.archive_query()
     for photo_path in nonarchived_files:
         shutil.copy(photo_path, Path(config['TEST']['temp_folder']))
