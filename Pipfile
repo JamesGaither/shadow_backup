@@ -9,6 +9,7 @@ pylint = "<2.0.0"
 
 [packages]
 Pillow = "*"
+tkinter = "*"
 
 [requires]
 python_version = "3.7"
