@@ -1,4 +1,6 @@
+#A list of DB handling functions
 import sqlite3
+import os
 
 class dbhandler:
     def __init__(self, db_path):
@@ -14,14 +16,20 @@ class dbhandler:
                 tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 tag TEXT UNIQUE)''')
         self.c.execute('''
+                CREATE TABLE if NOT EXISTS archivepath (
+                archive_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                archive_path TEXT UNIQUE)''')
+        self.c.execute('''
                 CREATE TABLE if NOT EXISTS photo (
                 photo_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
                 hash TEXT UNIQUE,
                 date_taken TEXT,
                 filepath_id INTEGER,
-                archived BOOLEAN,
-                FOREIGN KEY (filepath_id) REFERENCES filepath(filepath_id))''')
+                archive_id INTEGER,
+                incloud BOOLEAN,
+                FOREIGN KEY (filepath_id) REFERENCES filepath(filepath_id)
+                FOREIGN KEY (archive_id) REFERENCES archivepath(archive_id))''')
         self.c.execute('''
                 CREATE TABLE if NOT EXISTS photo_tag (
                 photo_id INTEGER,
@@ -53,9 +61,9 @@ class dbhandler:
                      filepath_id=None):
         self.c.execute('''
                 INSERT into photo
-                (name, hash, date_taken, filepath_id)
-                VALUES(?,?,?,?)
-                ''', (name, hash, date_taken, filepath_id))
+                (name, hash, date_taken, filepath_id, incloud)
+                VALUES(?,?,?,?,?)
+                ''', (name, hash, date_taken, filepath_id, 0))
 
         self.conn.commit()
         return self.c.lastrowid
@@ -79,6 +87,41 @@ class dbhandler:
                 VALUES(?,?)''', (photo_id, tag_id))
         self.conn.commit()
 
+    #WIP archiving photos
+    def insert_archive(self, photo_name, archive_path):
+        self.c.execute('''
+                INSERT or IGNORE into archivepath(archive_path)
+                VALUES(?)''', (archive_path,))
+        self.conn.commit()
+        self.c.execute('''
+                SELECT archive_id from archivepath WHERE archive_path=?
+                ''', (archive_path,))
+        archive_id = self.c.fetchone()[0]
+        photo_hash = photo_name.split(".")[0]
+        self.c.execute('''
+                UPDATE photo SET archive_id=?
+                WHERE name=?''', (archive_id, photo_name))
+        self.conn.commit()
+        return
+
+    # Pull a single filepath
+    def pull_filepath(self, filepath_id):
+        self.c.execute('''
+        SELECT filepath from filepath
+        WHERE filepath_id=?''', (filepath_id,))
+        return self.c.fetchone()[0]
+
+    #WIP
+    def archive_query(self):
+        nonarchived_files = []
+        self.c.execute('''
+                SELECT filepath_id, name from photo
+                WHERE archive_id IS null''')
+        for filepathid, photo_name in self.c.fetchall():
+            filepath = self.pull_filepath(filepathid)
+            nonarchived_files.append(os.path.join(filepath, photo_name))
+        return nonarchived_files
+            
 #WIP to pull photos where tag is input
     def pull_tag(self, search_tags):
         query = f'''
@@ -92,7 +135,5 @@ class dbhandler:
 
 # Strictly for testing below
 if __name__ == '__main__':
-    db = dbhandler('/home/james/projects/shadow_backup/photo.db')
-    tag_list = ['coffee',]
-    print(tag_list)
-    db.pull_tag(tag_list)
+    db = dbhandler('c:/users/james.gaither/projects/shadow_backup/test.db')
+    db.archive_query()

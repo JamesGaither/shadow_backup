@@ -8,6 +8,7 @@ import shutil
 from datetime import datetime
 from PIL import Image
 from pathlib import Path
+import subprocess
 
 # custom modules
 from modules.dbhandler import dbhandler
@@ -16,19 +17,30 @@ from modules.dbhandler import dbhandler
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--process", action="store_true",
                     help="reads all photos for processing")
+parser.add_argument("-a", "--archive", action="store_true",
+                    help="pushes non-archived photos to archive")
+parser.add_argument("-v", "--verbose", action="store_true",
+                    help="prints detailed information to terminal")
 args = parser.parse_args()
 
-# Initial Set-up
+# Pull Config info
 config = configparser.ConfigParser()
 config.read('config/main.ini')
 picpath = config['GENERAL']['picture_path']
 p_in = config['GENERAL']['p_in']
 db = dbhandler(Path(config['GENERAL']['db_path']))
+sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
+vol_size = config['ARCHIVE']['vol_size']
+archive_path = Path(config['ARCHIVE']['input'])
+archive_pw = config['ARCHIVE']['password']
+archive_out = Path(config['ARCHIVE']['output'])
+
+archive_name = "1"   #Temp solution
 allpics = []
 
-# Functions
+###Build out Functions###
 
-
+# Pulls a date taken from photo (if any)
 def get_date_taken(path):
     return Image.open(path)._getexif()[36867]
 
@@ -54,7 +66,6 @@ def process():
 
         # Check if picture has been processed
         if db.hashcheck(hash):
-            print(original_name, "has been processed before. skipping")
             continue
 
         # Write updates to DB
@@ -74,8 +85,31 @@ def process():
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
+        if args.verbose:
+            print(f"Moving{pic} to {filepath}")
         shutil.move(pic, os.path.join(filepath, new_name))
+
+
+# Push unprocessed photos to archive (WIP-likely to change and evolve with time)     
+def archive():
+    if args.verbose:
+        print("Begin archiving")
+    nonarchived_files = db.archive_query()
+    for photo_path in nonarchived_files:
+        shutil.copy(photo_path, Path(config['TEST']['temp_folder']))
+    os.path.join(archive_out, archive_name)
+    archive_command = (r'"{}" a -v"{}" -t7z -mhe=on -mx9 -p"{}" "{}" "{}"'
+                       .format(sevenz_path, vol_size, archive_pw, archive_out,
+                        Path(config['TEST']['temp_folder'])))
+    subprocess.run(archive_command)
+    for subdir, dirs, file in os.walk(archive_path):
+        for archive_picture in file:
+            db.insert_archive(archive_picture, str(archive_out))
+
 
 if __name__ == '__main__':
     if args.process:
         process()
+    if args.archive:
+        archive()
+        
