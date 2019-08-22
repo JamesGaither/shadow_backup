@@ -66,8 +66,8 @@ def process():
                                     datetime.strftime(date_taken, '%d'))
         except Exception as e:
             if args.verbose:
-                print(f"Error raised on  import of EXIF tag for {pic}")
-                print(f"error is {e}")
+                print(f"Error raised on import of EXIF tag for {pic}")
+                print(f"Error: {e}")
             date_taken = None
             filepath = os.path.join(p_storage, 'nodate')
 
@@ -104,14 +104,14 @@ def archive():
     nonarchived_files = db.archive_query()
     for photo_path in nonarchived_files:
         shutil.copy(photo_path, work_folder)
-    os.path.join(archive_out, archive_name)
+    archive_fullpath = os.path.join(archive_out, archive_name)
     archive_command = (r'"{}" a -v"{}" -t7z -mhe=on -mx9 -p"{}" "{}" "{}"'
-                       .format(sevenz_path, vol_size, archive_pw, archive_out,
-                        Path(work_folder)))
+                       .format(sevenz_path, vol_size, archive_pw, 
+                       archive_fullpath, Path(work_folder)))
     subprocess.run(archive_command)
     for subdir, dirs, file in os.walk(work_folder):
         for archive_picture in file:
-            db.insert_archive(archive_picture, str(archive_out))
+            db.insert_archive(archive_picture, str(archive_fullpath))
 
 
 if __name__ == '__main__':

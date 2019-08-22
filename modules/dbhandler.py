@@ -44,7 +44,7 @@ class dbhandler:
         self.c.execute("SELECT photo_id FROM photo WHERE hash=?", (hash,))
         row = self.c.fetchone()
         if row:
-            print("hash in DB for photo_id:", row[0])
+            print(f"hash in DB for photo_id: {row[0]}")
             return "hash in DB"
 
     def insert_filepath(self, folder_path):
