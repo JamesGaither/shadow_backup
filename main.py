@@ -33,8 +33,9 @@ sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
 vol_size = config['ARCHIVE']['vol_size']
 archive_pw = config['ARCHIVE']['password']
 archive_out = Path(config['ARCHIVE']['output'])
-work_folder= Path(config['PATH']['work_folder'])
+work_folder = Path(config['PATH']['work_folder'])
 
+valid_extentions = ['.cr2', '.jpg', '.jpeg', '.png' ]
 archive_name = "1"   #Temp solution need to rotate
 allpics = []
 
@@ -55,6 +56,10 @@ def process():
             allpics.append(os.path.join(subdir, file))
     for pic in allpics:
         original_name, extension = os.path.splitext(pic)
+        if extension.lower() not in valid_extentions:
+            if args.verbose:
+                print(f"{pic} does not have a valid photo extension")
+            continue
         hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
         new_name = hash + extension.lower()
         try:

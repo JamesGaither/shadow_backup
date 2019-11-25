@@ -4,11 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pycodestyle ="*"
-pylint = "<2.0.0"
 
 [packages]
 exifread = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
