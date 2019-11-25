@@ -35,7 +35,7 @@ archive_pw = config['ARCHIVE']['password']
 archive_out = Path(config['ARCHIVE']['output'])
 work_folder = Path(config['PATH']['work_folder'])
 
-valid_extentions = ['cr2', 'jpg', 'jpeg', 'png' ]
+valid_extentions = ['.cr2', '.jpg', '.jpeg', '.png' ]
 archive_name = "1"   #Temp solution need to rotate
 allpics = []
 
