@@ -1,5 +1,6 @@
 # Tkinter testing script
-# This is non-operational!!
+# This is semi-operational
+
 import os
 from PIL import Image, ImageTk
 import tkinter as tk
@@ -12,36 +13,37 @@ for subdir, dirs, files in os.walk(image_path):
         all_pics.append(os.path.join(subdir, file))
 
 
-print(all_pics[0])
-def load_next_image():
-    count += 1
-    image = Image.open(all_pics[count])
-    photo = ImageTk.PhotoImage(image)
+###################
 
-    label.configure(image=photo)
-#    label = Label(window, image=photo)
- #   label.image = photo
-  #  label.pack()
+# Set variables
+all_pics_count = len(all_pics)
+photo_number = 0
 
-image = Image.open(all_pics[count])
-photo = ImageTk.PhotoImage(image)
-label = Label(window, image=photo)
-label.image = photo
-label.pack()
+def next_photo() :
+    global photo_number
 
-labelframe = LabelFrame(window)
-labelframe.pack(fill="both", expand="yes")
-left = Label(labelframe)
-
-button=Button(labelframe, padx = 5, pady = 5, text="Next",command = Click)
-button.pack(side = RIGHT)
-
-R1 = Radiobutton(labelframe, text="Choice 1", value=1)
-R1.pack(side = LEFT)
-
-R2 = Radiobutton(labelframe, text="Choice 2",  value=2)
-R2.pack(side = LEFT)
+    # Set up entry for window
+    #if tag_input.get():     #Non-operational
+    #    print("input=", tag_input.get())
+    tag_input = tk.Entry(width = 60)
+    tag_input.grid(row = 2, column = 0)
+    # Handle photo-side of display
+    img = Image.open(all_pics[photo_number])
+    img = img.resize((250,250), Image.ANTIALIAS)
+    small_img = ImageTk.PhotoImage(img)
+    imgLabel = tk.Label(window, image=small_img)
+    imgLabel.image = small_img
+    imgLabel.grid(row = 1, column = 0)
+    photo_number += 1
 
 
-left.pack()
+window = tk.Tk()
+window.title("Tag Editor")
+#top_frame = tk.Frame(window).pack(side = "top")
+#bottom_frame = tk.Frame(window).pack(side = "bottom")
+tk.Label(text = "Insert your tags seperated by a space", 
+          fg = "white", bg = "green").grid(row = 0, column = 0, columnspan = 2,
+          sticky="W")
+tk.Button(text = "insert", command = next_photo).grid(row = 2, column = 1)
+next_photo()
 window.mainloop()
