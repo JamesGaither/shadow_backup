@@ -1,4 +1,10 @@
-#A list of DB handling functions
+###############################################################################
+# Module: dbhandler.py
+# Purpose: Handles Database calls/writes for ShadowBackup
+# Written by James Gaither
+# www.jamesgaither.com
+###############################################################################
+
 import sqlite3
 import os
 
