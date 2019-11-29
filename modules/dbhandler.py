@@ -1,6 +1,7 @@
-#A list of DB handling functions
+# A list of DB handling functions
 import sqlite3
 import os
+
 
 class dbhandler:
     def __init__(self, db_path):
@@ -38,7 +39,7 @@ class dbhandler:
                 FOREIGN KEY (tag_id) REFERENCES tag(tag_id),
                 PRIMARY KEY (photo_id, tag_id))''')
         self.conn.commit()
-    
+
     # Check if hash exists
     def hashcheck(self, hash):
         self.c.execute("SELECT photo_id FROM photo WHERE hash=?", (hash,))
@@ -87,7 +88,7 @@ class dbhandler:
                 VALUES(?,?)''', (photo_id, tag_id))
         self.conn.commit()
 
-    #WIP archiving photos
+    # WIP archiving photos
     def insert_archive(self, photo_name, archive_path):
         self.c.execute('''
                 INSERT or IGNORE into archivepath(archive_path)
@@ -97,7 +98,6 @@ class dbhandler:
                 SELECT archive_id from archivepath WHERE archive_path=?
                 ''', (archive_path,))
         archive_id = self.c.fetchone()[0]
-        photo_hash = photo_name.split(".")[0]
         self.c.execute('''
                 UPDATE photo SET archive_id=?
                 WHERE name=?''', (archive_id, photo_name))
@@ -111,7 +111,7 @@ class dbhandler:
         WHERE filepath_id=?''', (filepath_id,))
         return self.c.fetchone()[0]
 
-    #WIP
+    # WIP
     def archive_query(self):
         nonarchived_files = []
         self.c.execute('''
@@ -122,7 +122,7 @@ class dbhandler:
             nonarchived_files.append(os.path.join(filepath, photo_name))
         return nonarchived_files
             
-#WIP to pull photos where tag is input
+    # WIP to pull photos where tag is input
     def pull_tag(self, search_tags):
         query = f'''
                 select filepath.filepath
@@ -133,7 +133,23 @@ class dbhandler:
                 where tag.tag in ({','.join(['?']*len(search_tags))})'''
         return self.c.execute(query, search_tags)
 
+    def notag_query(self):
+        notag_photo = []
+        self.c.execute('''
+                select filepath.filepath, photo.name
+                from photo
+                    JOIN filepath on photo.filepath_id = filepath.filepath_id
+                    LEFT JOIN photo_tag on photo.photo_id = photo_tag.photo_id
+                WHERE photo_tag.photo_id is null''')
+        for filepath, photo_name in self.c.fetchall():
+            # print(photo_name)
+            notag_photo.append(os.path.join(filepath, photo_name))
+        return notag_photo
+
 # Strictly for testing below
+
+
 if __name__ == '__main__':
-    db = dbhandler('c:/users/james.gaither/projects/shadow_backup/test.db')
-    db.archive_query()
+    db = dbhandler('C:/Users/james.gaither/Projects/temp/photo/testing_1.db')
+    for i in db.notag_query():
+        print(i)
