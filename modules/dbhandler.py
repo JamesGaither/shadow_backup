@@ -136,16 +136,18 @@ class dbhandler:
 
     def notag_query(self):
         notag_photo = []
+        photoid_list = []
         self.c.execute('''
-                select filepath.filepath, photo.name
+                select photo.photo_id, filepath.filepath, photo.name
                 from photo
                     JOIN filepath on photo.filepath_id = filepath.filepath_id
                     LEFT JOIN photo_tag on photo.photo_id = photo_tag.photo_id
                 WHERE photo_tag.photo_id is null''')
-        for filepath, photo_name in self.c.fetchall():
+        for photo_id, filepath, photo_name in self.c.fetchall():
             # print(photo_name)
+            photoid_list.append(photo_id)
             notag_photo.append(os.path.join(filepath, photo_name))
-        return notag_photo
+        return photoid_list, notag_photo
 
 # Strictly for testing below
 

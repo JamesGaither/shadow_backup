@@ -10,7 +10,11 @@ from dbhandler import dbhandler
 
 # Scan DB for any non-tagged photos and return them
 db = dbhandler('C:/Users/james.gaither/Projects/temp/photo/testing_1.db')
-untagged_photo = db.notag_query()
+
+# Todo: a better method?
+notag_query = db.notag_query()
+photoid_list = notag_query[0]
+untagged_photo = notag_query[1]
 
 # Set variables
 untagged_photo_count = len(untagged_photo)
@@ -27,8 +31,12 @@ def previous_photo():
 
 
 def insert_tag():
+    global photo_number
     if tag_input.get():
-        print("input=", tag_input.get())
+        print(type(tag_input.get()))
+        for tag in tag_input.get().split():
+            tag_id = db.insert_tag(tag)
+            db.insert_phototag(photoid_list[photo_number], tag_id)
     tag_input.delete(0, 'end')
     next_photo()
 
@@ -60,5 +68,8 @@ tk.Button(text="Insert", command=insert_tag).grid(row=2, column=2)
 tk.Button(text="Next", command=next_photo).grid(row=2, column=3)
 tag_input = tk.Entry(width=50)
 tag_input.grid(row=2, column=0)
+
+# Start up display
+# window.wm_attributes("-topmost", 1)
 photo_display()
 window.mainloop()
