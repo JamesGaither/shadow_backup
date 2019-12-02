@@ -30,7 +30,8 @@ class dbhandler:
                 archive_id INTEGER,
                 incloud BOOLEAN,
                 FOREIGN KEY (filepath_id) REFERENCES filepath(filepath_id)
-                FOREIGN KEY (archive_id) REFERENCES archivepath(archive_id))''')
+                FOREIGN KEY (archive_id) REFERENCES archivepath(archive_id))
+                ''')
         self.c.execute('''
                 CREATE TABLE if NOT EXISTS photo_tag (
                 photo_id INTEGER,
@@ -43,9 +44,9 @@ class dbhandler:
     # Check if hash exists
     def hashcheck(self, hash):
         self.c.execute("SELECT photo_id FROM photo WHERE hash=?", (hash,))
-        row = self.c.fetchone()
-        if row:
-            print(f"hash in DB for photo_id: {row[0]}")
+        photo_id = self.c.fetchone()
+        if photo_id:
+            print(f"hash in DB for photo_id: {photo_id[0]}")
             return "hash in DB"
 
     def insert_filepath(self, folder_path):
@@ -121,7 +122,7 @@ class dbhandler:
             filepath = self.pull_filepath(filepathid)
             nonarchived_files.append(os.path.join(filepath, photo_name))
         return nonarchived_files
-            
+
     # WIP to pull photos where tag is input
     def pull_tag(self, search_tags):
         query = f'''
