@@ -60,6 +60,11 @@ def photo_display():
     imgLabel.image = small_img
     imgLabel.grid(row=0, column=0)
 
+    # Display known tags
+    tags = "testtag1 testtag2 testag3"
+    tag_label = tk.Label(window, text=tags)
+    tag_label.grid(row=1, column=1, sticky="N")
+
 
 window = tk.Tk()
 window.title("Shadow Backup Tag Editor")
