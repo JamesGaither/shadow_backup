@@ -154,5 +154,5 @@ class dbhandler:
 
 if __name__ == '__main__':
     db = dbhandler('C:/Users/james.gaither/Projects/temp/photo/testing_1.db')
-    for i in db.notag_query():
-        print(i)
+    tag = 'test1'
+    db.pull_tag(tag)
