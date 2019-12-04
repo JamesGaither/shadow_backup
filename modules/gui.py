@@ -53,9 +53,18 @@ def next_photo():
 
 def photo_display():
     global photo_number
+
+    # Adjust image to a smaller size for display
     img = Image.open(untagged_photo[photo_number])
-    img = img.resize((300, 300), Image.ANTIALIAS)
+    image_width, image_height = img.size
+    img_ratio = image_width / image_height
+    print(img_ratio)
+    new_img_height = 500
+    img = img.resize((int(new_img_height * img_ratio), new_img_height),
+                     Image.ANTIALIAS)
     small_img = ImageTk.PhotoImage(img)
+
+    # Build and display the image in a label
     imgLabel = tk.Label(window, image=small_img)
     imgLabel.image = small_img
     imgLabel.grid(row=0, column=0)
