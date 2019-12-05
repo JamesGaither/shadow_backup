@@ -60,9 +60,9 @@ def photo_display():
     # Adjust image to a smaller size for display
     img = Image.open(untagged_photo[photo_number])
     image_width, image_height = img.size
-    img_ratio = image_width / image_height
-    new_img_height = 500
-    new_img_width = int(new_img_height * img_ratio)
+    img_ratio = image_height / image_width
+    new_img_width = 700
+    new_img_height = int(new_img_width * img_ratio)
     img = img.resize((new_img_width, new_img_height),
                      Image.ANTIALIAS)
     small_img = ImageTk.PhotoImage(img)
@@ -74,26 +74,30 @@ def photo_display():
 
     # Display Photo name
     photo_name = db.pull_name(photoid_list[photo_number])
-    photo_name_label = tk.Label(window, text=photo_name)
-    photo_name_label.grid(row=0, column=2, columnspan=2)
+    photo_name_label = tk.Label(window, text=photo_name, background='#424242',
+                                anchor='nw')
+    photo_name_label.grid(row=0, column=2, columnspan=2, sticky='NWSE')
 
     # Display known tags
     tags = "testtag1 testtag2 testag3"
-    tag_label = tk.Label(window, text=tags)
-    tag_label.grid(row=1, column=2, columnspan=2, sticky='NW')
+    tag_label = tk.Label(window, text=tags, background='#424242', anchor='nw',
+                         borderwidth=2, relief="sunk", fg='white')
+    tag_label.grid(row=1, column=2, columnspan=2, sticky='NWSE')
 
 
 window = tk.Tk()
-window.geometry("1200x600")
+window.geometry("1100x550")
 window.title("Shadow Backup Tag Editor")
+window.config(background='#303030')
 back_button = tk.Button(text="<<", command=lambda: change_photo('back'),
-                        width=50, height=2)
-back_button.grid(row=0, column=0)
-tk.Button(text="Insert", command=insert_tag).grid(row=2, column=3, sticky='S')
+                        width=48, height=2)
+back_button.grid(row=0, column=0, sticky='W')
+input_button = tk.Button(text="Insert", command=insert_tag, height=2)
+input_button.grid(row=2, column=3, sticky='S')
 fwd_button = tk.Button(text=">>", command=lambda: change_photo('forward'),
-                       width=50, height=2)
-fwd_button.grid(row=0, column=1)
-tag_input = tk.Entry(width=50)
+                       width=48, height=2)
+fwd_button.grid(row=0, column=1, sticky='E')
+tag_input = tk.Text(window, width=25, height=2)
 tag_input.grid(row=2, column=2, sticky='S')
 
 # Start up display
