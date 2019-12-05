@@ -62,33 +62,40 @@ def photo_display():
     image_width, image_height = img.size
     img_ratio = image_width / image_height
     new_img_height = 500
-    img = img.resize((int(new_img_height * img_ratio), new_img_height),
+    new_img_width = int(new_img_height * img_ratio)
+    img = img.resize((new_img_width, new_img_height),
                      Image.ANTIALIAS)
     small_img = ImageTk.PhotoImage(img)
 
     # Build and display the image in a label
     imgLabel = tk.Label(window, image=small_img)
     imgLabel.image = small_img
-    imgLabel.grid(row=0, column=0)
+    imgLabel.grid(row=1, column=0, columnspan=2, rowspan=2, sticky='NWSE')
+
+    # Display Photo name
+    photo_name = db.pull_name(photoid_list[photo_number])
+    photo_name_label = tk.Label(window, text=photo_name)
+    photo_name_label.grid(row=0, column=2, columnspan=2)
 
     # Display known tags
     tags = "testtag1 testtag2 testag3"
     tag_label = tk.Label(window, text=tags)
-    tag_label.grid(row=1, column=1, sticky="N")
+    tag_label.grid(row=1, column=2, columnspan=2, sticky='NW')
 
 
 window = tk.Tk()
+window.geometry("1200x600")
 window.title("Shadow Backup Tag Editor")
-# back_button = tk.Button(text="<<", command=previous_photo)
-back_button = tk.Button(text="<<", command=lambda: change_photo('back'))
-back_button.grid(row=2, column=1)
-tk.Button(text="Insert", command=insert_tag).grid(row=2, column=2)
-fwd_button = tk.Button(text=">>", command=lambda: change_photo('forward'))
-fwd_button.grid(row=2, column=3)
+back_button = tk.Button(text="<<", command=lambda: change_photo('back'),
+                        width=50, height=2)
+back_button.grid(row=0, column=0)
+tk.Button(text="Insert", command=insert_tag).grid(row=2, column=3, sticky='S')
+fwd_button = tk.Button(text=">>", command=lambda: change_photo('forward'),
+                       width=50, height=2)
+fwd_button.grid(row=0, column=1)
 tag_input = tk.Entry(width=50)
-tag_input.grid(row=2, column=0)
+tag_input.grid(row=2, column=2, sticky='S')
 
 # Start up display
-# window.wm_attributes("-topmost", 1)
 photo_display()
 window.mainloop()

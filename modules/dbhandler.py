@@ -134,6 +134,12 @@ class dbhandler:
                 where tag.tag in ({','.join(['?']*len(search_tags))})'''
         return self.c.execute(query, search_tags)
 
+    def pull_name(self, photo_id):
+        self.c.execute('''
+                SELECT photo.name from photo
+                WHERE photo_id=?''', (photo_id,))
+        return self.c.fetchone()
+
     def notag_query(self):
         notag_photo = []
         photoid_list = []
@@ -144,7 +150,6 @@ class dbhandler:
                     LEFT JOIN photo_tag on photo.photo_id = photo_tag.photo_id
                 WHERE photo_tag.photo_id is null''')
         for photo_id, filepath, photo_name in self.c.fetchall():
-            # print(photo_name)
             photoid_list.append(photo_id)
             notag_photo.append(os.path.join(filepath, photo_name))
         return photoid_list, notag_photo
