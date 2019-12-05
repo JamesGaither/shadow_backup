@@ -140,6 +140,7 @@ class dbhandler:
                 WHERE photo_id=?''', (photo_id,))
         return self.c.fetchone()
 
+    # Pull all photos that have no tags
     def notag_query(self):
         notag_photo = []
         photoid_list = []
