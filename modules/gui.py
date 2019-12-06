@@ -1,5 +1,11 @@
-# Only can edit pictures in the DB already??
+###############################################################################
+# Module: gui.py
+# Purpose: GUI interface for inputting tags in Shadow_Backup
+# Written by James Gaither
+# www.jamesgaither.com
+###############################################################################
 
+# Import Base Modules
 from PIL import Image, ImageTk
 import tkinter as tk
 
@@ -104,7 +110,7 @@ class gui(object):
         # Display all known tags. Not in use for now.
 
         # tag_label = tk.Label(window, text=tags, background='#424242',
-        #                     anchor='nw',borderwidth=2, relief="sunk", 
+        #                     anchor='nw',borderwidth=2, relief="sunk",
         #                     fg='white')
         # tag_label.grid(row=1, column=2, columnspan=2, sticky='NWSE')
 
