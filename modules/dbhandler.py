@@ -8,6 +8,7 @@
 import sqlite3
 import os
 
+
 class dbhandler:
     def __init__(self, db_path):
         self.conn = sqlite3.connect(db_path)
@@ -35,7 +36,8 @@ class dbhandler:
                 archive_id INTEGER,
                 incloud BOOLEAN,
                 FOREIGN KEY (filepath_id) REFERENCES filepath(filepath_id)
-                FOREIGN KEY (archive_id) REFERENCES archivepath(archive_id))''')
+                FOREIGN KEY (archive_id) REFERENCES archivepath(archive_id))
+                ''')
         self.c.execute('''
                 CREATE TABLE if NOT EXISTS photo_tag (
                 photo_id INTEGER,
@@ -44,13 +46,13 @@ class dbhandler:
                 FOREIGN KEY (tag_id) REFERENCES tag(tag_id),
                 PRIMARY KEY (photo_id, tag_id))''')
         self.conn.commit()
-    
+
     # Check if hash exists
     def hashcheck(self, hash):
         self.c.execute("SELECT photo_id FROM photo WHERE hash=?", (hash,))
-        row = self.c.fetchone()
-        if row:
-            print(f"hash in DB for photo_id: {row[0]}")
+        photo_id = self.c.fetchone()
+        if photo_id:
+            print(f"hash in DB for photo_id: {photo_id[0]}")
             return "hash in DB"
 
     def insert_filepath(self, folder_path):
@@ -93,7 +95,7 @@ class dbhandler:
                 VALUES(?,?)''', (photo_id, tag_id))
         self.conn.commit()
 
-    #WIP archiving photos
+    # WIP archiving photos
     def insert_archive(self, photo_name, archive_path):
         self.c.execute('''
                 INSERT or IGNORE into archivepath(archive_path)
@@ -103,7 +105,6 @@ class dbhandler:
                 SELECT archive_id from archivepath WHERE archive_path=?
                 ''', (archive_path,))
         archive_id = self.c.fetchone()[0]
-        photo_hash = photo_name.split(".")[0]
         self.c.execute('''
                 UPDATE photo SET archive_id=?
                 WHERE name=?''', (archive_id, photo_name))
@@ -117,7 +118,7 @@ class dbhandler:
         WHERE filepath_id=?''', (filepath_id,))
         return self.c.fetchone()[0]
 
-    #WIP
+    # WIP
     def archive_query(self):
         nonarchived_files = []
         self.c.execute('''
@@ -127,8 +128,8 @@ class dbhandler:
             filepath = self.pull_filepath(filepathid)
             nonarchived_files.append(os.path.join(filepath, photo_name))
         return nonarchived_files
-            
-#WIP to pull photos where tag is input
+
+    # WIP to pull photos where tag is input
     def pull_tag(self, search_tags):
         query = f'''
                 select filepath.filepath
@@ -139,7 +140,31 @@ class dbhandler:
                 where tag.tag in ({','.join(['?']*len(search_tags))})'''
         return self.c.execute(query, search_tags)
 
+    def pull_name(self, photo_id):
+        self.c.execute('''
+                SELECT photo.name from photo
+                WHERE photo_id=?''', (photo_id,))
+        return self.c.fetchone()
+
+    # Pull all photos that have no tags
+    def notag_query(self):
+        notag_photo = []
+        photoid_list = []
+        self.c.execute('''
+                select photo.photo_id, filepath.filepath, photo.name
+                from photo
+                    JOIN filepath on photo.filepath_id = filepath.filepath_id
+                    LEFT JOIN photo_tag on photo.photo_id = photo_tag.photo_id
+                WHERE photo_tag.photo_id is null''')
+        for photo_id, filepath, photo_name in self.c.fetchall():
+            photoid_list.append(photo_id)
+            notag_photo.append(os.path.join(filepath, photo_name))
+        return photoid_list, notag_photo
+
 # Strictly for testing below
+
+
 if __name__ == '__main__':
-    db = dbhandler('c:/users/james.gaither/projects/shadow_backup/test.db')
-    db.archive_query()
+    db = dbhandler('C:/Users/james.gaither/Projects/temp/photo/testing_1.db')
+    tag = 'test1'
+    db.pull_tag(tag)

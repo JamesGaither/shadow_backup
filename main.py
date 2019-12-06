@@ -10,7 +10,6 @@
 import os
 import argparse
 import configparser
-import datetime
 import hashlib
 import shutil
 import exifread
@@ -20,6 +19,7 @@ import subprocess
 
 # custom modules
 from modules.dbhandler import dbhandler
+from modules.gui import gui
 
 # Handle arguments
 parser = argparse.ArgumentParser()
@@ -29,6 +29,8 @@ parser.add_argument("-a", "--archive", action="store_true",
                     help="pushes non-archived photos to archive")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="prints detailed information to terminal")
+parser.add_argument("-i", "--inserttags", action="store_true",
+                    help="activates the gui for inputting tags")
 args = parser.parse_args()
 
 # Pull Config info
@@ -36,13 +38,14 @@ config = configparser.ConfigParser()
 config.read('config/main.ini')
 p_in = Path(config['PATH']['p_in'])
 p_storage = Path(config['PATH']['p_storage'])
-db = dbhandler(Path(config['GENERAL']['db_path']))
+db_path = Path(config['GENERAL']['db_path'])
 sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
 vol_size = config['ARCHIVE']['vol_size']
 archive_pw = config['ARCHIVE']['password']
 archive_out = Path(config['ARCHIVE']['output'])
 work_folder = Path(config['PATH']['work_folder'])
 
+db = dbhandler(db_path)
 valid_extentions = ['.cr2', '.jpg', '.jpeg', '.png' ]
 archive_name = "1"   #Temp solution need to rotate
 allpics = []
@@ -138,3 +141,7 @@ if __name__ == '__main__':
         process()
     if args.archive:
         archive()
+    if args.inserttags:
+        gui = gui(db_path)
+        gui.photo_display()
+        gui.window.mainloop()
