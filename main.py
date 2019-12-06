@@ -5,8 +5,7 @@
 # www.jamesgaither.com
 ###############################################################################
 
-
-# base libraries
+# Base Libraries
 import os
 import argparse
 import configparser
@@ -46,11 +45,12 @@ archive_out = Path(config['ARCHIVE']['output'])
 work_folder = Path(config['PATH']['work_folder'])
 
 db = dbhandler(db_path)
-valid_extentions = ['.cr2', '.jpg', '.jpeg', '.png' ]
-archive_name = "1"   #Temp solution need to rotate
+valid_extentions = ['.cr2', '.jpg', '.jpeg', '.png']
+archive_name = "1"   # Temp solution need to rotate
 allpics = []
 
-###Build out Functions###
+# Build out Functions
+
 
 # Pulls a date taken from photo (if any)
 def get_date_taken(path):
@@ -60,7 +60,8 @@ def get_date_taken(path):
     print(exif_datetag)
     return str(exif_datetag)
 
-#Pulls pictures in from to-process folder and processes them
+
+# Pulls pictures in from to-process folder and processes them
 def process():
     for subdir, dirs, files in os.walk(os.path.join(p_storage, p_in)):
         for file in files:
@@ -79,7 +80,7 @@ def process():
             if args.verbose:
                 print(f"photo {pic} has already been processed")
             continue
-        
+
         try:
             date_taken = datetime.strptime(get_date_taken(pic),
                                            '%Y:%m:%d %H:%M:%S')
@@ -93,8 +94,6 @@ def process():
                 print(f"Error: {e}")
             date_taken = None
             filepath = os.path.join(p_storage, 'nodate')
-
-
 
         # Write updates to DB
         if config['DEVELOPMENT']['quickentry'] == 'no':
@@ -118,7 +117,7 @@ def process():
         shutil.move(pic, os.path.join(filepath, new_name))
 
 
-# Push unarchived photos to archive     
+# Push unarchived photos to archive
 def archive():
     if args.verbose:
         print("Begin archiving")
@@ -127,8 +126,8 @@ def archive():
         shutil.copy(photo_path, work_folder)
     archive_fullpath = os.path.join(archive_out, archive_name)
     archive_command = (r'"{}" a -v"{}" -t7z -mhe=on -mx9 -p"{}" "{}" "{}"'
-                       .format(sevenz_path, vol_size, archive_pw, 
-                       archive_fullpath, Path(work_folder)))
+                       .format(sevenz_path, vol_size, archive_pw,
+                               archive_fullpath, Path(work_folder)))
     subprocess.run(archive_command)
     for subdir, dirs, file in os.walk(work_folder):
         for archive_picture in file:
@@ -136,7 +135,6 @@ def archive():
 
 
 if __name__ == '__main__':
-
     if args.process:
         process()
     if args.archive:

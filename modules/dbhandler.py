@@ -1,10 +1,11 @@
 ###############################################################################
 # Module: dbhandler.py
-# Purpose: Handles Database calls/writes for ShadowBackup
+# Purpose: Handles database calls/writes for ShadowBackup
 # Written by James Gaither
 # www.jamesgaither.com
 ###############################################################################
 
+# Base Libraries
 import sqlite3
 import os
 
@@ -65,8 +66,7 @@ class dbhandler:
                 ''', (folder_path,))
         return self.c.fetchone()[0]
 
-    def insert_photo(self, name, hash, date_taken=None,
-                     filepath_id=None):
+    def insert_photo(self, name, hash, date_taken=None, filepath_id=None):
         self.c.execute('''
                 INSERT into photo
                 (name, hash, date_taken, filepath_id, incloud)
@@ -161,10 +161,7 @@ class dbhandler:
             notag_photo.append(os.path.join(filepath, photo_name))
         return photoid_list, notag_photo
 
-# Strictly for testing below
-
 
 if __name__ == '__main__':
-    db = dbhandler('C:/Users/james.gaither/Projects/temp/photo/testing_1.db')
-    tag = 'test1'
-    db.pull_tag(tag)
+    db_path = 'path/to/db'
+    db = dbhandler(db_path)
