@@ -17,7 +17,7 @@ This software's overall goal is to give the user a simple, clean, fully transpar
 ### What tools does Shadow Backup need to run?
 Shadow Backup aims to be a piece in your arsenal of photo management tools by utilizing:
 1. Your OS file sytem to manage the disk write of the photos
-2. SQLite as the DataBase of choice for managing indexs of the photos for the fastest pull times for your photos
+2. SQLite as the DataBase of choice for managing indexes of the photos for the fastest pull times for your photos
 3. 7Zip(might change in the future) handles archiving and encrypting your photos for uploading to a backup server.
 
 ### What is the current state? When will this be complete?

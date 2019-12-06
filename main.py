@@ -1,3 +1,11 @@
+###############################################################################
+# Module: main.py
+# Purpose: Main program of ShadowBackup. See Readme for further detail
+# Written by James Gaither
+# www.jamesgaither.com
+###############################################################################
+
+
 # base libraries
 import os
 import argparse
@@ -65,6 +73,13 @@ def process():
             continue
         hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
         new_name = hash + extension.lower()
+
+        # Check if picture has been processed
+        if db.hashcheck(hash):
+            if args.verbose:
+                print(f"photo {pic} has already been processed")
+            continue
+        
         try:
             date_taken = datetime.strptime(get_date_taken(pic),
                                            '%Y:%m:%d %H:%M:%S')
@@ -79,9 +94,7 @@ def process():
             date_taken = None
             filepath = os.path.join(p_storage, 'nodate')
 
-        # Check if picture has been processed
-        if db.hashcheck(hash):
-            continue
+
 
         # Write updates to DB
         if config['DEVELOPMENT']['quickentry'] == 'no':
