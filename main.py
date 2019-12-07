@@ -45,7 +45,7 @@ archive_out = Path(config['ARCHIVE']['output'])
 work_folder = Path(config['PATH']['work_folder'])
 
 db = dbhandler(db_path)
-valid_extentions = ['.cr2', '.jpg', '.jpeg', '.png']
+valid_extensions = ['.cr2', '.jpg', '.jpeg', '.png']
 archive_name = "1"   # Temp solution need to rotate
 allpics = []
 
@@ -57,7 +57,6 @@ def get_date_taken(path):
     f = open(path, 'rb')
     exif_tags = exifread.process_file(f, stop_tag='DateTimeOriginal')
     exif_datetag = exif_tags['EXIF DateTimeOriginal']
-    print(exif_datetag)
     return str(exif_datetag)
 
 
@@ -68,7 +67,7 @@ def process():
             allpics.append(os.path.join(subdir, file))
     for pic in allpics:
         original_name, extension = os.path.splitext(pic)
-        if extension.lower() not in valid_extentions:
+        if extension.lower() not in valid_extensions:
             if args.verbose:
                 print(f"{pic} does not have a valid photo extension")
             continue
@@ -96,24 +95,14 @@ def process():
             filepath = os.path.join(p_storage, 'nodate')
 
         # Write updates to DB
-        if config['DEVELOPMENT']['quickentry'] == 'no':
-            tag_list = input("Enter tags seperated by a space "
-                             f"of photo: {original_name}: ").split()
-        else:
-            tag_list = []
         filepath_id = db.insert_filepath(filepath)
-        photo_id = db.insert_photo(new_name, hash,
-                                   date_taken, filepath_id)
-        if tag_list:
-            for tag in tag_list:
-                tag_id = db.insert_tag(tag)
-                db.insert_phototag(photo_id, tag_id)
+        db.insert_photo(new_name, hash, date_taken, filepath_id)
 
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         if args.verbose:
-            print(f"Moving{pic} to {filepath}")
+            print(f"Moving {pic} to {filepath}")
         shutil.move(pic, os.path.join(filepath, new_name))
 
 
@@ -138,7 +127,8 @@ if __name__ == '__main__':
     if args.process:
         process()
     if args.archive:
-        archive()
+        print("archiving has been temporarily disabled")
+        # archive()
     if args.inserttags:
         gui = gui(db_path)
         gui.photo_display()
