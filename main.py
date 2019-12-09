@@ -49,8 +49,6 @@ valid_extensions = ['.cr2', '.jpg', '.jpeg', '.png']
 archive_name = "1"   # Temp solution need to rotate
 allpics = []
 
-# Build out Functions
-
 
 # Pulls a date taken from photo (if any)
 def get_date_taken(path):
@@ -62,7 +60,7 @@ def get_date_taken(path):
 
 # Pulls pictures in from to-process folder and processes them
 def process():
-    for subdir, dirs, files in os.walk(os.path.join(p_storage, p_in)):
+    for subdir, dirs, files in os.walk(p_in):
         for file in files:
             allpics.append(os.path.join(subdir, file))
     for pic in allpics:

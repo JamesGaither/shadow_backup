@@ -161,6 +161,10 @@ class dbhandler:
             notag_photo.append(os.path.join(filepath, photo_name))
         return photoid_list, notag_photo
 
+    # WIP delete functionality
+    def delete_photo(self, photo_name):
+        print("non-functional for now")
+
 
 if __name__ == '__main__':
     db_path = 'path/to/db'
