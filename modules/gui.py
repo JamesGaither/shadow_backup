@@ -39,14 +39,17 @@ class gui(object):
         self.input_button = tk.Button(text="Insert",
                                       command=self.insert_tag, height=2,
                                       background='#424242', fg='white')
-        self.input_button.grid(row=2, column=3, sticky='S')
+        self.input_button.grid(row=4, column=3, sticky='S')
         self.fwd_button = tk.Button(text=">>", command=lambda:
                                     self.change_photo('forward'),
                                     width=49, height=2)
         self.fwd_button.grid(row=0, column=1, sticky='E')
         self.tag_input = tk.Text(self.window, width=25, height=2,
                                  background='#424242')
-        self.tag_input.grid(row=2, column=2, sticky='S')
+        self.tag_input.grid(row=4, column=2, sticky='S')
+        self.delete_photo = tk.Button(text="Delete Photo", height=2,
+                                      background='#424242', fg='white')
+        self.delete_photo.grid(row=1, column=2, columnspan=2, sticky='ew')
 
     def insert_tag(self):
         # global photo_number
@@ -91,14 +94,20 @@ class gui(object):
         img_ratio = image_height / image_width
         new_img_width = 700
         new_img_height = int(new_img_width * img_ratio)
+        if new_img_height > self.window.winfo_screenheight():
+            new_img_height = self.window.winfo_screenheight() - 80
+        # self.window.geometry(f'950x{new_img_height}')
         img = img.resize((new_img_width, new_img_height),
                          Image.ANTIALIAS)
         small_img = ImageTk.PhotoImage(img)
 
+        # Draw window to proper size
+        self.window.geometry(f'950x{self.window.winfo_screenheight()}')
+
         # Build and display the image in a label
         imgLabel = tk.Label(self.window, image=small_img)
         imgLabel.image = small_img
-        imgLabel.grid(row=1, column=0, columnspan=2, rowspan=2, sticky='NWSE')
+        imgLabel.grid(row=1, column=0, columnspan=2, rowspan=4, sticky='NWSE')
 
         # Display Photo name
         photo_name = self.db.pull_name(self.photoid_list[self.photo_number])

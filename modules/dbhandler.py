@@ -164,6 +164,7 @@ class dbhandler:
     # WIP delete functionality
     def delete_photo(self, photo_name):
         print("non-functional for now")
+        return
 
 
 if __name__ == '__main__':
