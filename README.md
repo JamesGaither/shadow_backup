@@ -10,7 +10,7 @@ This software's overall goal is to give the user a simple, clean, fully transpar
 1. Having photos tagged with key information that I want to put there.
 2. Be able to retrieve any subset of photos using any tag(s) I want.
 3. Maintain all my photos locally for easy off-line access, but also be able to download my photos from a disaster storage and not have to re-index them(hence using a sqlite DB).
-4. Have an easy method to upload photos to any online backup system (or eventually to a remote server at a friend/family house). While the current system I use puts these into AWS deep glacier a key aspect I was shooting for was allowing that service to change without rewritting a huge section of code. This is why I use 7Z to compress, package, and encrypt photos into chunks. I can upload these chunks to whatever I want knowing that my photos are not just floating out in cyberspace for anyone to see.
+4. Have an easy method to upload photos to any online backup system (or eventually to a remote server at a friend/family house).
 5. Not rewrite code that others have available online that has been tested multiple times and proven.  This is why I use 7z for compression, encryption, and packaging. I could write a module that does this, but to what means? It would not be nearly as good as 7z and not nearly as tested. With this in mind though, I wanted to ensure this program could work on Windows as well as Linux since I use both.
 6. Ensure maximum privacy by ensuring anything leaving your computer is encrypted fully.
 
