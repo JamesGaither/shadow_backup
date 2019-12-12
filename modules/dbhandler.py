@@ -53,8 +53,7 @@ class dbhandler:
         self.c.execute("SELECT photo_id FROM photo WHERE hash=?", (hash,))
         photo_id = self.c.fetchone()
         if photo_id:
-            print(f"hash in DB for photo_id: {photo_id[0]}")
-            return "hash in DB"
+            return photo_id[0]
 
     def insert_filepath(self, folder_path):
         self.c.execute('''

@@ -73,9 +73,11 @@ def process():
         new_name = hash + extension.lower()
 
         # Check if picture has been processed
-        if db.hashcheck(hash):
+        hashcheck = db.hashcheck(hash)
+        if hashcheck:
             if args.verbose:
-                print(f"photo {pic} has already been processed")
+                print(f"{pic} has already been processed with photo ID:"
+                      f"{hashcheck}")
             continue
 
         try:
