@@ -165,7 +165,25 @@ class dbhandler:
         print("non-functional for now")
         return
 
+    # proof of concept for testing, attempt to return photo with all given tags
+    def test_tag(self, search_tags):
+        mainphoto_list = set()
+        for tag in search_tags:
+            photo_list = set()
+            self.c.execute(f'''
+                select photo_tag.photo_id from photo_tag
+                WHERE tag_id = {tag}''')
+            for i in self.c.fetchall():
+                photo_list.add(i[0])
+            if len(mainphoto_list) < 1:
+                mainphoto_list = photo_list
+            else:
+                mainphoto_list = mainphoto_list.intersection(photo_list)
+        return mainphoto_list
+
 
 if __name__ == '__main__':
-    db_path = 'path/to/db'
+    db_path = r'C:\Users\james.gaither\Projects\shadow_backup\photo.db'
+    tag_list = [3, 385]
     db = dbhandler(db_path)
+    print(db.test_tag(tag_list))

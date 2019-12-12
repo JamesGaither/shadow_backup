@@ -30,6 +30,10 @@ parser.add_argument("-v", "--verbose", action="store_true",
                     help="prints detailed information to terminal")
 parser.add_argument("-i", "--inserttags", action="store_true",
                     help="activates the gui for inputting tags")
+parser.add_argument("--pullphoto", action="store_true",
+                    help="pull photo based on tags given")
+parser.add_argument("-t", "--tags", nargs='+',
+                    help="list of tags to pull with")
 args = parser.parse_args()
 
 # Pull Config info
@@ -123,6 +127,11 @@ def archive():
             db.insert_archive(archive_picture, str(archive_fullpath))
 
 
+def pull_photo():
+    tag_list = args.tags
+    print(db.test_tag(tag_list))
+
+
 if __name__ == '__main__':
     if args.process:
         process()
@@ -133,3 +142,7 @@ if __name__ == '__main__':
         gui = gui(db_path)
         gui.photo_display()
         gui.window.mainloop()
+
+    # Testing pull photos
+    if args.pullphoto:
+        pull_photo()
