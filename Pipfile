@@ -9,7 +9,6 @@ flake8 = "*"
 [packages]
 exifread = "*"
 pillow = "*"
-flake8 = "*"
 
 [requires]
 python_version = "3.8"
