@@ -129,7 +129,8 @@ def archive():
 
 def pull_photo():
     tag_list = args.tags
-    print(db.test_tag(tag_list))
+    for i in db.pull_photo(tag_list):
+        shutil.copy(i, work_folder)
 
 
 if __name__ == '__main__':
