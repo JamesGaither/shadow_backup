@@ -15,6 +15,7 @@ I am open to suggestions, so either send me a message or drop a pull request for
 
 ### What Shadow Backup does and how it's different from what is on the market
 
+
 This software's overall goal is to give the user a simple, clean, fully transparent method to manage any number of photos. Much of the software that is out there to manage photos try to be an all in one method to manage your photos and typically charge for all the features it adds. Shadow Backup aims to be different by not offering an all in one solution that replicates readily available software that does its job exceptionally well. It is designed around how I like to manage photos. Some key design goals of Shadown Backup are listed below along with their implementation status:
 
 1. Have the index listed seperatly from the photos to accommodate ease of backup and cross platform support [implemented via SQLite]
@@ -28,11 +29,12 @@ This software's overall goal is to give the user a simple, clean, fully transpar
 
 ### Tools needed for Shadow Backup
 
-Shadow Backup aims to be a piece in your arsenal of photo management tools by utilizing:
-
-1. Your OS file system to manage the disk write of the photos
-2. SQLite as the DataBase of choice for managing indexes of the photos for the fastest pull times for your photos
-3. 7Zip (might change in the future) handles archiving and encrypting your photos for uploading to a backup server.
+1. Having photos tagged with key information that I want to put there.
+2. Be able to retrieve any subset of photos using any tag(s) I want.
+3. Maintain all my photos locally for easy off-line access, but also be able to download my photos from a disaster storage and not have to re-index them(hence using a sqlite DB).
+4. Have an easy method to upload photos to any online backup system.
+5. Not rewrite code that others have available online that has been tested multiple times and proven.  This is why I use 7z for compression, encryption, and packaging. I could write a module that does this, but to what means? It would not be nearly as good as 7z and not nearly as tested. With this in mind though, I wanted to ensure this program could work on Windows as well as Linux since I use both.
+6. Ensure maximum privacy by ensuring anything leaving your computer is encrypted fully.
 
 ## How to use Shadow Backup
 
