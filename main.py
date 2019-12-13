@@ -12,6 +12,7 @@ import configparser
 import hashlib
 import shutil
 import exifread
+import sys
 from datetime import datetime
 from pathlib import Path
 import subprocess
@@ -41,6 +42,7 @@ config = configparser.ConfigParser()
 config.read('config/main.ini')
 p_in = Path(config['PATH']['p_in'])
 p_storage = Path(config['PATH']['p_storage'])
+results_path = Path(config['PATH']['results'])
 db_path = Path(config['GENERAL']['db_path'])
 sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
 vol_size = config['ARCHIVE']['vol_size']
@@ -127,10 +129,18 @@ def archive():
             db.insert_archive(archive_picture, str(archive_fullpath))
 
 
+# Pull a photo to a given directory given a lsit of tags
 def pull_photo():
+    if not args.tags:
+        sys.exit("Must specify tags to search using argument \"-t\" followed "
+                 "by at least one tag to search")
     tag_list = args.tags
-    for i in db.pull_photo(tag_list):
-        shutil.copy(i, work_folder)
+    if not os.path.exists(results_path):
+        os.makedirs(results_path)
+    results = db.pull_photo(tag_list)
+    print(f"Search yielded {len(results)} results")
+    for i in results:
+        shutil.copy(i, results_path)
 
 
 if __name__ == '__main__':
