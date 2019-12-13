@@ -12,7 +12,6 @@ import configparser
 import hashlib
 import shutil
 import exifread
-import sys
 from datetime import datetime
 from pathlib import Path
 import subprocess
@@ -32,9 +31,9 @@ parser.add_argument("-v", "--verbose", action="store_true",
 parser.add_argument("-i", "--inserttags", action="store_true",
                     help="activates the gui for inputting tags")
 parser.add_argument("--pullphoto", action="store_true",
-                    help="pull photo based on tags given")
+                    help="pull photo based on tags given, requires -t arg")
 parser.add_argument("-t", "--tags", nargs='+',
-                    help="list of tags to pull with")
+                    help="list of tags to pull photos with")
 args = parser.parse_args()
 
 # Pull Config info
@@ -132,8 +131,9 @@ def archive():
 # Pull a photo to a given directory given a lsit of tags
 def pull_photo():
     if not args.tags:
-        sys.exit("Must specify tags to search using argument \"-t\" followed "
-                 "by at least one tag to search")
+        parser.error("The --pullphoto argument requires the -t argument "
+                     "followed by at least one tag to search")
+
     tag_list = args.tags
     if not os.path.exists(results_path):
         os.makedirs(results_path)
@@ -147,13 +147,10 @@ if __name__ == '__main__':
     if args.process:
         process()
     if args.archive:
-        print("archiving has been temporarily disabled")
-        # archive()
+        archive()
     if args.inserttags:
         gui = gui(db_path)
         gui.photo_display()
         gui.window.mainloop()
-
-    # Testing pull photos
     if args.pullphoto:
         pull_photo()
