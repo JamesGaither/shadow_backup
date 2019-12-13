@@ -110,7 +110,7 @@ class dbhandler:
         self.conn.commit()
         return
 
-    # Pull a single filepath
+    # Pull a single filepath (need to cut this out, not useful as function)
     def pull_filepath(self, filepath_id):
         self.c.execute('''
         SELECT filepath from filepath
@@ -128,22 +128,25 @@ class dbhandler:
             nonarchived_files.append(os.path.join(filepath, photo_name))
         return nonarchived_files
 
-    # WIP to pull photos where tag is input
-    def pull_tag(self, search_tags):
-        query = f'''
-                select filepath.filepath
-                from filepath
-                join photo on filepath.filepath_id = photo.filepath_id
-                join photo_tag on photo.photo_id = photo_tag.photo_id
-                join tag on photo_tag.tag_id = tag.tag_id
-                where tag.tag in ({','.join(['?']*len(search_tags))})'''
-        return self.c.execute(query, search_tags)
-
-    def pull_name(self, photo_id):
-        self.c.execute('''
-                SELECT photo.name from photo
-                WHERE photo_id=?''', (photo_id,))
-        return self.c.fetchone()
+    # Pull photo list given a list of tags
+    def pull_photo(self, search_tags):
+        mainphoto_list = set()
+        for tag in search_tags:
+            photo_list = set()
+            query = '''
+                    SELECT filepath.filepath, photo.name from filepath
+                        JOIN photo on photo.filepath_id = filepath.filepath_id
+                        JOIN photo_tag ON photo.photo_id = photo_tag.photo_id
+                        JOIN tag ON photo_tag.tag_id = tag.tag_id
+                    WHERE tag.tag = ?'''
+            self.c.execute(query, (tag,))
+            for p, n in self.c.fetchall():
+                photo_list.add(os.path.join(p, n))
+            if len(mainphoto_list) < 1:
+                mainphoto_list = photo_list
+            else:
+                mainphoto_list = mainphoto_list.intersection(photo_list)
+        return mainphoto_list
 
     # Pull all photos that have no tags
     def notag_query(self):
@@ -167,5 +170,7 @@ class dbhandler:
 
 
 if __name__ == '__main__':
-    db_path = 'path/to/db'
+    db_path = r'C:\Users\james.gaither\Projects\shadow_backup\photo.db'
+    tag_list = ['']
     db = dbhandler(db_path)
+    print(db.test_tag(tag_list))
