@@ -7,6 +7,7 @@ work_folder = /path/to/working/work_folder
 p_storage = /path/to/final/photo/p_storage
 p_in = /path/to/photo/folder/input
 results = /path/to/result
+reject = /path/to/reject
 
 [ARCHIVE]
 # Current version of Shadow Backup uses 7zip to archive photos. List those details below

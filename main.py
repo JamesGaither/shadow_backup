@@ -43,6 +43,7 @@ p_in = Path(config['PATH']['p_in'])
 p_storage = Path(config['PATH']['p_storage'])
 results_path = Path(config['PATH']['results'])
 db_path = Path(config['GENERAL']['db_path'])
+reject_path = Path(config['PATH']['reject'])
 sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
 vol_size = config['ARCHIVE']['vol_size']
 archive_pw = config['ARCHIVE']['password']
@@ -53,6 +54,13 @@ db = dbhandler(db_path)
 valid_extensions = ['.cr2', '.jpg', '.jpeg', '.png']
 archive_name = "1"   # Temp solution need to rotate
 allpics = []
+
+
+# Moves a file that is rejected to the rejected path and logs it (WIP)
+def reject(file):
+    if not os.path.exists(reject_path):
+        os.makedirs(reject_path)
+    shutil.move(file, reject_path)
 
 
 # Pulls a date taken from photo (if any)
@@ -73,7 +81,9 @@ def process():
         if extension.lower() not in valid_extensions:
             if args.verbose:
                 print(f"{pic} does not have a valid photo extension")
+            reject(pic)
             continue
+
         hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
         new_name = hash + extension.lower()
 
@@ -83,6 +93,7 @@ def process():
             if args.verbose:
                 print(f"{pic} has already been processed with photo ID:"
                       f"{hashcheck}")
+            reject(pic)
             continue
 
         try:
