@@ -52,11 +52,11 @@ work_folder = Path(config['PATH']['work_folder'])
 
 db = dbhandler(db_path)
 valid_extensions = ['.cr2', '.jpg', '.jpeg', '.png']
-archive_name = "1"   # Temp solution need to rotate
+archive_name = "1"
 allpics = []
 
 
-# Moves a file that is rejected to the rejected path and logs it (WIP)
+# Moves a file that is rejected to the rejected path
 def reject(file):
     if not os.path.exists(reject_path):
         os.makedirs(reject_path)
@@ -71,7 +71,7 @@ def get_date_taken(path):
     return str(exif_datetag)
 
 
-# Pulls pictures in from to-process folder and processes them
+# Pulls pictures in from input folder and processes them
 def process():
     for subdir, dirs, files in os.walk(p_in):
         for file in files:
