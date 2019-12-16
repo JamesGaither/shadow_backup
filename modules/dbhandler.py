@@ -163,6 +163,12 @@ class dbhandler:
             notag_photo.append(os.path.join(filepath, photo_name))
         return photoid_list, notag_photo
 
+    def pull_name(self, photo_id):
+        self.c.execute('''
+                SELECT photo.name from photo
+                WHERE photo_id=?''', (photo_id,))
+        return self.c.fetchone()
+
     # WIP delete functionality
     def delete_photo(self, photo_name):
         print("non-functional for now")
