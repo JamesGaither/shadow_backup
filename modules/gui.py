@@ -29,7 +29,7 @@ class gui(object):
 
         # Build the display window
         self.window = tk.Tk()
-        self.window.geometry("950x550")
+        self.window.geometry(f'950x{self.window.winfo_screenheight()}')
         self.window.title("Shadow Backup Tag Editor")
         self.window.config(background='#303030')
         self.back_button = tk.Button(text="<<",
@@ -49,7 +49,7 @@ class gui(object):
         self.tag_input.grid(row=4, column=2, sticky='S')
         self.delete_photo = tk.Button(text="Delete Photo", height=2,
                                       background='#424242', fg='white')
-        self.delete_photo.grid(row=1, column=2, columnspan=2, sticky='ew')
+        self.delete_photo.grid(row=1, column=2, columnspan=2, sticky='new')
 
     def insert_tag(self):
         # global photo_number
@@ -96,13 +96,9 @@ class gui(object):
         new_img_height = int(new_img_width * img_ratio)
         if new_img_height > self.window.winfo_screenheight():
             new_img_height = self.window.winfo_screenheight() - 80
-        # self.window.geometry(f'950x{new_img_height}')
         img = img.resize((new_img_width, new_img_height),
                          Image.ANTIALIAS)
         small_img = ImageTk.PhotoImage(img)
-
-        # Draw window to proper size
-        self.window.geometry(f'950x{self.window.winfo_screenheight()}')
 
         # Build and display the image in a label
         imgLabel = tk.Label(self.window, image=small_img)
