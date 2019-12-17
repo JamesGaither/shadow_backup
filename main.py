@@ -33,7 +33,8 @@ parser.add_argument("-i", "--inserttags", action="store_true",
 parser.add_argument("--pullphoto", action="store_true",
                     help="pull photo based on tags given, requires -t arg")
 parser.add_argument("-t", "--tags", nargs='+',
-                    help="list of tags to pull photos with")
+                    help="list of tags to either pull photos or to insert with"
+                    " option -p")
 args = parser.parse_args()
 
 # Pull Config info
@@ -112,8 +113,12 @@ def process():
 
         # Write updates to DB
         filepath_id = db.insert_filepath(filepath)
-        db.insert_photo(new_name, hash, date_taken, filepath_id)
-
+        photo_id = db.insert_photo(new_name, hash, date_taken, filepath_id)
+        if args.tags:
+            tag_list = args.tags
+            for tag in tag_list:
+                tag_id = db.insert_tag(tag)
+                db.insert_phototag(photo_id, tag_id)
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
