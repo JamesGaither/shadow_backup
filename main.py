@@ -37,6 +37,10 @@ parser.add_argument("-t", "--tags", nargs='+',
                     " option -p")
 args = parser.parse_args()
 
+# Verify at lease one argument is given
+if not any(vars(args).values()):
+    parser.error('Must provide at least 1 argument')
+
 # Pull Config info
 config = configparser.ConfigParser()
 config.read('config/main.ini')
@@ -137,7 +141,7 @@ def archive():
     archive_fullpath = os.path.join(archive_out, archive_name)
     archive_command = (r'"{}" a -v"{}" -t7z -mhe=on -mx9 -p"{}" "{}" "{}"'
                        .format(sevenz_path, vol_size, archive_pw,
-                               archive_fullpath, Path(work_folder)))
+                               archive_fullpath, work_folder))
     subprocess.run(archive_command)
     for subdir, dirs, file in os.walk(work_folder):
         for archive_picture in file:
