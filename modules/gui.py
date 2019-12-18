@@ -32,27 +32,32 @@ class gui(object):
         self.window.geometry(f'950x{self.window.winfo_screenheight()}')
         self.window.title("Shadow Backup Tag Editor")
         self.window.config(background='#303030')
-        self.back_button = tk.Button(text="<<",
-                                     command=lambda: self.change_photo('back'),
-                                     width=49, height=2)
+        self.back_button = tk.Button(text="<<", fg='white', command=lambda:
+                                     self.change_photo('back'), width=49,
+                                     height=2, activebackground='#424242',
+                                     activeforeground='white', bg='#424242')
         self.back_button.grid(row=0, column=0, sticky='W')
+
         self.input_button = tk.Button(text="Insert",
                                       command=self.insert_tag, height=2,
                                       background='#424242', fg='white')
         self.input_button.grid(row=4, column=3, sticky='S')
-        self.fwd_button = tk.Button(text=">>", command=lambda:
-                                    self.change_photo('forward'),
-                                    width=49, height=2)
+
+        self.fwd_button = tk.Button(text=">>", fg='white', command=lambda:
+                                    self.change_photo('forward'), width=49,
+                                    height=2, activebackground='#424242',
+                                    activeforeground='white', bg='#424242')
         self.fwd_button.grid(row=0, column=1, sticky='E')
+
         self.tag_input = tk.Text(self.window, width=25, height=2,
                                  background='#424242')
         self.tag_input.grid(row=4, column=2, sticky='S')
+
         self.delete_photo = tk.Button(text="Delete Photo", height=2,
                                       background='#424242', fg='white')
         self.delete_photo.grid(row=1, column=2, columnspan=2, sticky='new')
 
     def insert_tag(self):
-        # global photo_number
         if self.tag_input.get('1.0', 'end'):
             for tag in self.tag_input.get('1.0', 'end').split():
                 tag_id = self.db.insert_tag(tag)
@@ -63,7 +68,6 @@ class gui(object):
             self.change_photo('forward')
 
     def change_photo(self, direction):
-        # global photo_number
         if direction == 'forward':
             self.photo_number += 1
         elif direction == "back":
@@ -75,10 +79,10 @@ class gui(object):
         self.photo_display()
 
     def photo_display(self):
-        # global self.photo_number
         global imgLabel
 
         # Adjust the directional button states depending on photo location
+
         if self.photo_number >= (self.untagged_photo_count - 1):
             self.fwd_button.config(state='disabled')
         else:

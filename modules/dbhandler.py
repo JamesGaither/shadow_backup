@@ -110,7 +110,7 @@ class dbhandler:
         self.conn.commit()
         return
 
-    # Pull a single filepath (need to cut this out, not useful as function)
+    # Pull a single filepath
     def pull_filepath(self, filepath_id):
         self.c.execute('''
         SELECT filepath from filepath

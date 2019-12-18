@@ -1,5 +1,5 @@
 ###############################################################################
-# Module: main.py
+# Module: shadowbackup.py
 # Purpose: Main program of ShadowBackup. See Readme for further detail
 # Written by James Gaither
 # www.jamesgaither.com
