@@ -129,24 +129,35 @@ class dbhandler:
         return nonarchived_files
 
     # Pull photo list given a list of tags
-    def pull_photo(self, search_tags):
-        mainphoto_list = set()
+    def pull_photo(self, search_tags, exclude_tags=None):
+        photos_to_pull = {}
         for tag in search_tags:
-            photo_list = set()
             query = '''
-                    SELECT filepath.filepath, photo.name from filepath
+                    SELECT filepath.filepath, photo.name, photo.photo_id
+                        from filepath
                         JOIN photo on photo.filepath_id = filepath.filepath_id
                         JOIN photo_tag ON photo.photo_id = photo_tag.photo_id
                         JOIN tag ON photo_tag.tag_id = tag.tag_id
                     WHERE tag.tag = ?'''
             self.c.execute(query, (tag,))
-            for p, n in self.c.fetchall():
-                photo_list.add(os.path.join(p, n))
-            if len(mainphoto_list) < 1:
-                mainphoto_list = photo_list
-            else:
-                mainphoto_list = mainphoto_list.intersection(photo_list)
-        return mainphoto_list
+            for p, n, pi in self.c.fetchall():
+                if pi in photos_to_pull.keys():
+                    continue
+                photos_to_pull[pi] = os.path.join(p, n)
+
+        # If exclude tags are given, handle those
+        if exclude_tags:
+            key_copy = list(photos_to_pull.keys())
+            for photo_id in key_copy:
+                self.c.execute('''
+                    SELECT tag.tag from photo_tag
+                        JOIN tag on tag.tag_id = photo_tag.tag_id
+                    WHERE photo_tag.photo_id = ?''', (photo_id,))
+                for pulled_tag in self.c.fetchall():
+                    if pulled_tag[0] in exclude_tags:
+                        del photos_to_pull[photo_id]
+        photo_list = [v for v in photos_to_pull.values()]
+        return photo_list
 
     # Pull all photos that have no tags
     def notag_query(self):
@@ -176,7 +187,9 @@ class dbhandler:
 
 
 if __name__ == '__main__':
-    db_path = r'C:\Users\james.gaither\Projects\shadow_backup\photo.db'
-    tag_list = ['']
+    db_path = r'C:\Users\james.gaither\Projects\shadow_backup\photo_test.db'
+    tag_list = ['test2']
+    exclude_tags = ['test2']
     db = dbhandler(db_path)
-    print(db.test_tag(tag_list))
+    for i in db.pull_photo(tag_list, exclude_tags):
+        print(i)

@@ -35,6 +35,8 @@ parser.add_argument("--pullphoto", action="store_true",
 parser.add_argument("-t", "--tags", nargs='+',
                     help="list of tags to either pull photos or to insert with"
                     " option -p")
+parser.add_argument("-e", "--exclude", nargs='+',
+                    help="list of tags to exclude when pulling photos")
 args = parser.parse_args()
 
 # Verify at lease one argument is given
@@ -155,9 +157,10 @@ def pull_photo():
                      "followed by at least one tag to search")
 
     tag_list = args.tags
+    exclude_tags = args.exclude
     if not os.path.exists(results_path):
         os.makedirs(results_path)
-    results = db.pull_photo(tag_list)
+    results = db.pull_photo(tag_list, exclude_tags)
     print(f"Search yielded {len(results)} results")
     for i in results:
         shutil.copy(i, results_path)
