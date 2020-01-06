@@ -27,7 +27,7 @@ This software's overall goal is to give the user a simple, clean, fully transpar
 4. Not rewrite code that others have available online that has been tested multiple times and proven.
 5. Have access for any developer to expand on the core functionality of Shadow Backup [implemented by using SQLite DB for indexing]
 
-### Tools needed for Shadow Backup
+### Design goals for Shadow Backup
 
 1. Having photos tagged with key information that I want to put there.
 2. Be able to retrieve any subset of photos using any tag(s) I want.
