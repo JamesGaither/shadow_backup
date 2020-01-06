@@ -155,7 +155,10 @@ class dbhandler:
                     WHERE photo_tag.photo_id = ?''', (photo_id,))
                 for pulled_tag in self.c.fetchall():
                     if pulled_tag[0] in exclude_tags:
-                        del photos_to_pull[photo_id]
+                        try:
+                            del photos_to_pull[photo_id]
+                        except:
+                            continue
         photo_list = [v for v in photos_to_pull.values()]
         return photo_list
 
