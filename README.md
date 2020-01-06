@@ -54,3 +54,4 @@ Shadow backup takes a variety of aruments that allow it to do different things. 
 -i, --inserttags: Only run alone. This activates the GUI for adding tags.  
 --pullphoto: Pulls photos to the results directory based on the tags given (requires -i option). The tags are summed in results. Meaning, given arguments tag1 and tag2, only photos with the tag tag1 AND tag2 will be pulled. This copies the photo from the archive to the results, so you might use the results folder as you see fit.  
 -t, --tags: Give tags as an argument seperated by a space. This option when combined with --pullphoto will pull the photos with the coresponding tags. When used with the -p option, will label all new photos with the tags given (great option for processing those vacation pictures)
+-e, --exclude: Give tags as an argument seperated by a space. Use with the "--pullphoto" option to exclude all photos that include one or more of the listed tags from the search.
