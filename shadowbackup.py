@@ -1,5 +1,5 @@
 ###############################################################################
-# Module: main.py
+# Module: shadowbackup.py
 # Purpose: Main program of ShadowBackup. See Readme for further detail
 # Written by James Gaither
 # www.jamesgaither.com
@@ -33,8 +33,15 @@ parser.add_argument("-i", "--inserttags", action="store_true",
 parser.add_argument("--pullphoto", action="store_true",
                     help="pull photo based on tags given, requires -t arg")
 parser.add_argument("-t", "--tags", nargs='+',
-                    help="list of tags to pull photos with")
+                    help="list of tags to either pull photos or to insert with"
+                    " option -p")
+parser.add_argument("-e", "--exclude", nargs='+',
+                    help="list of tags to exclude when pulling photos")
 args = parser.parse_args()
+
+# Verify at lease one argument is given
+if not any(vars(args).values()):
+    parser.error('Must provide at least 1 argument')
 
 # Pull Config info
 config = configparser.ConfigParser()
@@ -112,8 +119,12 @@ def process():
 
         # Write updates to DB
         filepath_id = db.insert_filepath(filepath)
-        db.insert_photo(new_name, hash, date_taken, filepath_id)
-
+        photo_id = db.insert_photo(new_name, hash, date_taken, filepath_id)
+        if args.tags:
+            tag_list = args.tags
+            for tag in tag_list:
+                tag_id = db.insert_tag(tag)
+                db.insert_phototag(photo_id, tag_id)
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
@@ -132,7 +143,7 @@ def archive():
     archive_fullpath = os.path.join(archive_out, archive_name)
     archive_command = (r'"{}" a -v"{}" -t7z -mhe=on -mx9 -p"{}" "{}" "{}"'
                        .format(sevenz_path, vol_size, archive_pw,
-                               archive_fullpath, Path(work_folder)))
+                               archive_fullpath, work_folder))
     subprocess.run(archive_command)
     for subdir, dirs, file in os.walk(work_folder):
         for archive_picture in file:
@@ -146,9 +157,10 @@ def pull_photo():
                      "followed by at least one tag to search")
 
     tag_list = args.tags
+    exclude_tags = args.exclude
     if not os.path.exists(results_path):
         os.makedirs(results_path)
-    results = db.pull_photo(tag_list)
+    results = db.pull_photo(tag_list, exclude_tags)
     print(f"Search yielded {len(results)} results")
     for i in results:
         shutil.copy(i, results_path)
