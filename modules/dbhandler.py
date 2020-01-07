@@ -157,7 +157,7 @@ class dbhandler:
                     if pulled_tag[0] in exclude_tags:
                         try:
                             del photos_to_pull[photo_id]
-                        except:
+                        except Exception:
                             continue
         photo_list = [v for v in photos_to_pull.values()]
         return photo_list
