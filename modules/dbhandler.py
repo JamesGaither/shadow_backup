@@ -163,7 +163,7 @@ class dbhandler:
         return photo_list
 
     # Pull all photos that have no tags
-    def notag_query(self):
+    def notag_query(self, base_path):
         notag_photo = []
         photoid_list = []
         self.c.execute('''
@@ -174,7 +174,7 @@ class dbhandler:
                 WHERE photo_tag.photo_id is null''')
         for photo_id, filepath, photo_name in self.c.fetchall():
             photoid_list.append(photo_id)
-            notag_photo.append(os.path.join(filepath, photo_name))
+            notag_photo.append(os.path.join(base_path, filepath, photo_name))
         return photoid_list, notag_photo
 
     def pull_name(self, photo_id):

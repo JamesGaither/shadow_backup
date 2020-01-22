@@ -15,11 +15,11 @@ from .dbhandler import dbhandler
 
 class gui(object):
 
-    def __init__(self, db_path):
+    def __init__(self, db_path, base_path):
 
         # Build initial DB connections
         self.db = dbhandler(db_path)
-        self.notag_query = self.db.notag_query()
+        self.notag_query = self.db.notag_query(base_path)
 
         # Set variables
         self.photoid_list = self.notag_query[0]

@@ -46,16 +46,19 @@ if not any(vars(args).values()):
 # Pull Config info
 config = configparser.ConfigParser()
 config.read('config/main.ini')
-p_in = Path(config['PATH']['p_in'])
-p_storage = Path(config['PATH']['p_storage'])
-results_path = Path(config['PATH']['results'])
-db_path = Path(config['GENERAL']['db_path'])
-reject_path = Path(config['PATH']['reject'])
+base_path = Path(config['PATH']['base_path'])
+p_in = os.path.join(base_path, Path(config['PATH']['p_in']))
+p_storage = os.path.join(base_path, Path(config['PATH']['p_storage']))
+db_p_storage = Path(config['PATH']['p_storage'])
+results_path = os.path.join(base_path, Path(config['PATH']['results']))
+db_path = os.path.join(base_path, Path(config['GENERAL']['db_path']))
+work_folder = os.path.join(base_path, Path(config['PATH']['work_folder']))
+reject_path = os.path.join(base_path, Path(config['PATH']['reject']))
 sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
 vol_size = config['ARCHIVE']['vol_size']
 archive_pw = config['ARCHIVE']['password']
 archive_out = Path(config['ARCHIVE']['output'])
-work_folder = Path(config['PATH']['work_folder'])
+
 
 db = dbhandler(db_path)
 valid_extensions = ['.cr2', '.jpg', '.jpeg', '.png']
@@ -106,19 +109,20 @@ def process():
         try:
             date_taken = datetime.strptime(get_date_taken(pic),
                                            '%Y:%m:%d %H:%M:%S')
-            filepath = os.path.join(p_storage,
-                                    datetime.strftime(date_taken, '%Y'),
-                                    datetime.strftime(date_taken, '%m'),
-                                    datetime.strftime(date_taken, '%d'))
+            sub_filepath = os.path.join(db_p_storage,
+                                        datetime.strftime(date_taken, '%Y'),
+                                        datetime.strftime(date_taken, '%m'),
+                                        datetime.strftime(date_taken, '%d'))
         except Exception as e:
             if args.verbose:
                 print(f"Error raised on import of EXIF tag for {pic}")
                 print(f"Error: {e}")
             date_taken = None
-            filepath = os.path.join(p_storage, 'nodate')
+            sub_filepath = os.path.join(db_p_storage, 'nodate')
 
         # Write updates to DB
-        filepath_id = db.insert_filepath(filepath)
+        filepath = os.path.join(base_path, sub_filepath)
+        filepath_id = db.insert_filepath(sub_filepath)
         photo_id = db.insert_photo(new_name, hash, date_taken, filepath_id)
         if args.tags:
             tag_list = args.tags
@@ -172,7 +176,7 @@ if __name__ == '__main__':
     if args.archive:
         archive()
     if args.inserttags:
-        gui = gui(db_path)
+        gui = gui(db_path, base_path)
         gui.photo_display()
         gui.window.mainloop()
     if args.pullphoto:
