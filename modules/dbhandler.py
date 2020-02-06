@@ -50,6 +50,7 @@ class dbhandler:
 
     # Check if hash exists
     def hashcheck(self, hash):
+        '''Check if hash exists returns photo_id if it does'''
         self.c.execute("SELECT photo_id FROM photo WHERE hash=?", (hash,))
         photo_id = self.c.fetchone()
         if photo_id:

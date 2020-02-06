@@ -154,7 +154,7 @@ def archive():
             db.insert_archive(archive_picture, str(archive_fullpath))
 
 
-# Pull a photo to a given directory given a lsit of tags
+# Pull a photo to a given directory given a list of tags
 def pull_photo():
     if not args.tags:
         parser.error("The --pullphoto argument requires the -t argument "
