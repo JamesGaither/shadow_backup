@@ -66,8 +66,8 @@ archive_name = "1"
 allpics = []
 
 
-# Moves a file that is rejected to the rejected path
 def reject(file):
+    '''Moves a file that is rejected to the rejected path'''
     if not os.path.exists(reject_path):
         os.makedirs(reject_path)
     shutil.move(file, reject_path)
@@ -88,14 +88,15 @@ def process():
             allpics.append(os.path.join(subdir, file))
     for pic in allpics:
         original_name, extension = os.path.splitext(pic)
-        if extension.lower() not in valid_extensions:
+        extension = extension.lower()
+        if extension not in valid_extensions:
             if args.verbose:
                 print(f"{pic} does not have a valid photo extension")
             reject(pic)
             continue
 
         hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
-        new_name = hash + extension.lower()
+        # #new_name = hash + extension.lower()
 
         # Check if picture has been processed
         hashcheck = db.hashcheck(hash)
@@ -123,7 +124,8 @@ def process():
         # Write updates to DB
         filepath = os.path.join(base_path, sub_filepath)
         filepath_id = db.insert_filepath(sub_filepath)
-        photo_id = db.insert_photo(new_name, hash, date_taken, filepath_id)
+        photo_id, new_name = db.insert_photo(extension, hash, date_taken,
+                                             filepath_id)
         if args.tags:
             tag_list = args.tags
             for tag in tag_list:
@@ -133,7 +135,7 @@ def process():
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         if args.verbose:
-            print(f"Moving {pic} to {filepath}")
+            print(f"Moving {pic} to {filepath}\\{new_name}")
         shutil.move(pic, os.path.join(filepath, new_name))
 
 
