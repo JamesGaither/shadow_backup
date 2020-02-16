@@ -135,7 +135,7 @@ def process():
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         if args.verbose:
-            print(f"Moving {pic} to {filepath}\\{new_name}")
+            print(f"Moving {pic} to {os.path.join(filepath,new_name)}")
         shutil.move(pic, os.path.join(filepath, new_name))
 
 

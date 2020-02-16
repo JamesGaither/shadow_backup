@@ -8,6 +8,7 @@
 # Import Base Modules
 from PIL import Image, ImageTk
 import tkinter as tk
+import sys
 
 # Import Custom Modules
 from .dbhandler import dbhandler
@@ -25,6 +26,8 @@ class gui(object):
         self.photoid_list = self.notag_query[0]
         self.untagged_photo = self.notag_query[1]
         self.untagged_photo_count = len(self.untagged_photo)
+        if self.untagged_photo_count < 1:
+            sys.exit('All photos have tags')
         self.photo_number = 0
 
         # Build the display window

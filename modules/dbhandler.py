@@ -79,6 +79,7 @@ class dbhandler:
         self.c.execute('''
                 UPDATE photo SET name=?
                 WHERE photo_id=?''', (photo_name, photo_id))
+        self.conn.commit()
         return photo_id, photo_name
 
     # This handles a single tag insert
