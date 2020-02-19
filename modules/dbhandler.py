@@ -50,6 +50,7 @@ class dbhandler:
 
     # Check if hash exists
     def hashcheck(self, hash):
+        '''Check if hash exists returns photo_id if it does'''
         self.c.execute("SELECT photo_id FROM photo WHERE hash=?", (hash,))
         photo_id = self.c.fetchone()
         if photo_id:
@@ -65,15 +66,21 @@ class dbhandler:
                 ''', (folder_path,))
         return self.c.fetchone()[0]
 
-    def insert_photo(self, name, hash, date_taken=None, filepath_id=None):
+    def insert_photo(self, extension, hash, date_taken=None, filepath_id=None):
         self.c.execute('''
                 INSERT into photo
-                (name, hash, date_taken, filepath_id, incloud)
-                VALUES(?,?,?,?,?)
-                ''', (name, hash, date_taken, filepath_id, 0))
+                (hash, date_taken, filepath_id, incloud)
+                VALUES(?,?,?,?)
+                ''', (hash, date_taken, filepath_id, 0))
 
         self.conn.commit()
-        return self.c.lastrowid
+        photo_id = self.c.lastrowid
+        photo_name = str(photo_id) + extension
+        self.c.execute('''
+                UPDATE photo SET name=?
+                WHERE photo_id=?''', (photo_name, photo_id))
+        self.conn.commit()
+        return photo_id, photo_name
 
     # This handles a single tag insert
     def insert_tag(self, tag):
@@ -163,7 +170,7 @@ class dbhandler:
         return photo_list
 
     # Pull all photos that have no tags
-    def notag_query(self):
+    def notag_query(self, base_path):
         notag_photo = []
         photoid_list = []
         self.c.execute('''
@@ -174,7 +181,7 @@ class dbhandler:
                 WHERE photo_tag.photo_id is null''')
         for photo_id, filepath, photo_name in self.c.fetchall():
             photoid_list.append(photo_id)
-            notag_photo.append(os.path.join(filepath, photo_name))
+            notag_photo.append(os.path.join(base_path, filepath, photo_name))
         return photoid_list, notag_photo
 
     def pull_name(self, photo_id):

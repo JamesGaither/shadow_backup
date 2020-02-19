@@ -8,6 +8,7 @@
 # Import Base Modules
 from PIL import Image, ImageTk
 import tkinter as tk
+import sys
 
 # Import Custom Modules
 from .dbhandler import dbhandler
@@ -15,16 +16,18 @@ from .dbhandler import dbhandler
 
 class gui(object):
 
-    def __init__(self, db_path):
+    def __init__(self, db_path, base_path):
 
         # Build initial DB connections
         self.db = dbhandler(db_path)
-        self.notag_query = self.db.notag_query()
+        self.notag_query = self.db.notag_query(base_path)
 
         # Set variables
         self.photoid_list = self.notag_query[0]
         self.untagged_photo = self.notag_query[1]
         self.untagged_photo_count = len(self.untagged_photo)
+        if self.untagged_photo_count < 1:
+            sys.exit('All photos have tags')
         self.photo_number = 0
 
         # Build the display window

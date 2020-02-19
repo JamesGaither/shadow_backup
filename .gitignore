@@ -128,3 +128,5 @@ main.ini
 *.db
 test*
 .vscode
+roadmap*
+development_notes.txt
