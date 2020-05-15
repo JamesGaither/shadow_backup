@@ -112,8 +112,7 @@ def process():
                                            '%Y:%m:%d %H:%M:%S')
             sub_filepath = os.path.join(db_p_storage,
                                         datetime.strftime(date_taken, '%Y'),
-                                        datetime.strftime(date_taken, '%m'),
-                                        datetime.strftime(date_taken, '%d'))
+                                        datetime.strftime(date_taken, '%m'))
         except Exception as e:
             if args.verbose:
                 print(f"Error raised on import of EXIF tag for {pic}")
