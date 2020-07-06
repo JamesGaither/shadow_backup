@@ -47,7 +47,6 @@ Below is how to install Shadow Backup:
 Shadow backup takes a variety of arguments that allow it to do different things. See below for a full list  
 -h, --help: Displays all implemented arguments and their descriptions.  
 -p, --process: Runs the main program. This option takes photos from the input folder and processes them, adds the info to the DB and moves them to the processed folder.  
--a, --archive: [WIP] Adds unprocessed photos to an encrypted archive. This feature is still in progress.  
 -v, --verbose: Added to any other argument for a more verbose output with greater details.  
 -i, --inserttags: Only run alone. This activates the GUI for adding tags.  
 --pullphoto: Pulls photos to the results directory based on the tags given (requires -i option). The tags are summed in results. Meaning, given arguments tag1 and tag2, only photos with the tag tag1 AND tag2 will be pulled. This copies the photo from the archive to the results, so you might use the results folder as you see fit.  
