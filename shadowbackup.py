@@ -61,7 +61,7 @@ archive_out = Path(config['ARCHIVE']['output'])
 
 
 db = dbhandler(db_path)
-valid_extensions = ['.cr2', '.jpg', '.jpeg', '.png']
+valid_extensions = ['.tif', '.cr2', '.jpg', '.jpeg', '.png']
 archive_name = "1"
 allpics = []
 
@@ -71,7 +71,7 @@ def reject(file):
     if not os.path.exists(reject_path):
         os.makedirs(reject_path)
     shutil.move(file, reject_path)
-
+    #os.remove(file)
 
 # Pulls a date taken from photo (if any)
 def get_date_taken(path):
