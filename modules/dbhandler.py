@@ -30,7 +30,6 @@ class dbhandler:
                 hash TEXT UNIQUE,
                 date_taken TEXT,
                 filepath_id INTEGER,
-                incloud BOOLEAN,
                 FOREIGN KEY (filepath_id) REFERENCES filepath(filepath_id))
                 ''')
         self.c.execute('''
@@ -63,9 +62,9 @@ class dbhandler:
     def insert_photo(self, extension, hash, date_taken=None, filepath_id=None):
         self.c.execute('''
                 INSERT into photo
-                (hash, date_taken, filepath_id, incloud)
-                VALUES(?,?,?,?)
-                ''', (hash, date_taken, filepath_id, 0))
+                (hash, date_taken, filepath_id)
+                VALUES(?,?,?)
+                ''', (hash, date_taken, filepath_id))
 
         self.conn.commit()
         photo_id = self.c.lastrowid

@@ -24,8 +24,8 @@ from modules.gui import gui
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--process", action="store_true",
                     help="reads all photos for processing")
-parser.add_argument("-v", "--verbose", action="store_true",
-                    help="prints detailed information to terminal")
+# parser.add_argument("-v", "--verbose", action="store_true",
+#                    help="prints detailed information to terminal")
 parser.add_argument("-i", "--inserttags", action="store_true",
                     help="activates the gui for inputting tags")
 parser.add_argument("--pullphoto", action="store_true",
@@ -35,6 +35,7 @@ parser.add_argument("-t", "--tags", nargs='+',
                     " option -p")
 parser.add_argument("-e", "--exclude", nargs='+',
                     help="list of tags to exclude when pulling photos")
+parser.add_argument("-u", "--update", action="store_true", help="Coming Soon")
 args = parser.parse_args()
 
 # Verify at lease one argument is given
@@ -113,8 +114,7 @@ def process():
                                         datetime.strftime(date_taken, '%Y'),
                                         datetime.strftime(date_taken, '%m'))
         except Exception:
-            if args.verbose:
-                logger.info(f"Error raised on import of EXIF tag for {pic}")
+            logger.info(f"Error raised on import of EXIF tag for {pic}")
             date_taken = None
             sub_filepath = os.path.join(db_p_storage, 'nodate')
 
@@ -131,13 +131,12 @@ def process():
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
-        if args.verbose:
-            print(f"Moving {pic} to {os.path.join(filepath,new_name)}")
+        logger.info(f"Moving {pic} to {os.path.join(filepath,new_name)}")
         shutil.move(pic, os.path.join(filepath, new_name))
 
 
-# Pull a photo to a given directory given a list of tags
 def pull_photo():
+    '''Pull a photo to a given directory given a list of tags'''
     if not args.tags:
         parser.error("The --pullphoto argument requires the -t argument "
                      "followed by at least one tag to search")
@@ -152,6 +151,10 @@ def pull_photo():
         shutil.copy(i, results_path)
 
 
+def update():
+    '''Pull photos from working directory and update existing images'''
+
+
 if __name__ == '__main__':
     if args.process:
         process()
@@ -161,3 +164,5 @@ if __name__ == '__main__':
         gui.window.mainloop()
     if args.pullphoto:
         pull_photo()
+    if args.update:
+        update()
