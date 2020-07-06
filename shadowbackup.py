@@ -12,6 +12,7 @@ import configparser
 import hashlib
 import shutil
 import exifread
+import logging
 from datetime import datetime
 from pathlib import Path
 
@@ -40,6 +41,20 @@ args = parser.parse_args()
 if not any(vars(args).values()):
     parser.error('Must provide at least 1 argument')
 
+# Setup logging
+logfile = Path('shadow.log')
+log_level = 'DEBUG'
+logging.basicConfig(filename=logfile, datefmt="%Y-%m-%d %H:%M:%S",
+                    format=('%(asctime)s  %(name)s %(levelname)-10s '
+                            '%(message)-10s'))
+logging.StreamHandler()
+logger = logging.getLogger(__name__)
+logger.setLevel(log_level)
+handler = logging.StreamHandler()
+handler.setLevel('DEBUG')
+logger.addHandler(handler)
+logger.info('testing 12')
+
 # Pull Config info
 config = configparser.ConfigParser()
 config.read('config/main.ini')
@@ -51,10 +66,6 @@ results_path = os.path.join(base_path, Path(config['PATH']['results']))
 db_path = os.path.join(base_path, Path(config['GENERAL']['db_path']))
 work_folder = os.path.join(base_path, Path(config['PATH']['work_folder']))
 reject_path = os.path.join(base_path, Path(config['PATH']['reject']))
-sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
-vol_size = config['ARCHIVE']['vol_size']
-archive_pw = config['ARCHIVE']['password']
-archive_out = Path(config['ARCHIVE']['output'])
 db = dbhandler(db_path)
 valid_extensions = ['.tif', '.cr2', '.jpg', '.jpeg', '.png']
 allpics = []
@@ -84,21 +95,16 @@ def process():
         original_name, extension = os.path.splitext(pic)
         extension = extension.lower()
         if extension not in valid_extensions:
-            if args.verbose:
-                print(f"{pic} does not have a valid photo extension")
+            logger.info(f"{pic} does not have a valid photo extension")
             reject(pic)
-            continue
-
-        hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
 
         # Check if picture has been processed
+        hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
         hashcheck = db.hashcheck(hash)
         if hashcheck:
-            if args.verbose:
-                print(f"{pic} has already been processed with photo ID:"
-                      f"{hashcheck}")
+            logger.info(f"{pic} has already been processed with photo ID:"
+                        f"{hashcheck}")
             reject(pic)
-            continue
 
         try:
             date_taken = datetime.strptime(get_date_taken(pic),
@@ -106,10 +112,9 @@ def process():
             sub_filepath = os.path.join(db_p_storage,
                                         datetime.strftime(date_taken, '%Y'),
                                         datetime.strftime(date_taken, '%m'))
-        except Exception as e:
+        except Exception:
             if args.verbose:
-                print(f"Error raised on import of EXIF tag for {pic}")
-                print(f"Error: {e}")
+                logger.info(f"Error raised on import of EXIF tag for {pic}")
             date_taken = None
             sub_filepath = os.path.join(db_p_storage, 'nodate')
 
@@ -142,7 +147,7 @@ def pull_photo():
     if not os.path.exists(results_path):
         os.makedirs(results_path)
     results = db.pull_photo(tag_list, exclude_tags)
-    print(f"Search yielded {len(results)} results")
+    logger.info(f"Search yielded {len(results)} results")
     for i in results:
         shutil.copy(i, results_path)
 

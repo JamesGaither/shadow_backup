@@ -9,11 +9,3 @@ p_storage = p_storage
 p_in = input
 results = result
 reject = reject
-
-[ARCHIVE]
-# Current version of Shadow Backup uses 7zip to archive photos. List those details below
-sevenz_path = /path/to/7z/executable
-vol_size = Max size per file you want your archive to be split to
-output = /path/to/archive/storage/folder
-password = PASSWORD for archive
-

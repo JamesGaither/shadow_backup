@@ -31,7 +31,7 @@ class dbhandler:
                 date_taken TEXT,
                 filepath_id INTEGER,
                 incloud BOOLEAN,
-                FOREIGN KEY (filepath_id) REFERENCES filepath(filepath_id)
+                FOREIGN KEY (filepath_id) REFERENCES filepath(filepath_id))
                 ''')
         self.c.execute('''
                 CREATE TABLE if NOT EXISTS photo_tag (
