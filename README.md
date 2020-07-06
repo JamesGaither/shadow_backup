@@ -36,11 +36,10 @@ Shadow backup is meant to be used as a photo archive tool. it was designed with 
 
 Below is how to install Shadow Backup:  
 
-1. Have python 3.8, pip, pipenv, and 7zip
+1. Have python 3.8, pip, and the ability to install needed packages
 2. Clone the project from github to your local machine
-3. copy main.ini.sample to main.ini and fill out the needed information
-4. run `pipenv sync` to install needed python packages (or `pipenv install` if it doesn't work)
-5. Start using the project. Run all commands under pipenv e.g. `pipenv run main.py`
+3. Copy main.ini.sample to main.ini and fill out the needed information
+4. Better instructions to come
 
 ### Arguments
 
