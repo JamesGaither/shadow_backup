@@ -128,6 +128,10 @@ def process():
             for tag in tag_list:
                 tag_id = db.insert_tag(tag)
                 db.insert_phototag(photo_id, tag_id)
+        else:
+            tag_id = db.insert_tag('none')
+            db.insert_phototag(photo_id, tag_id)
+
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
@@ -148,7 +152,7 @@ def pull_photo():
     results = db.pull_photo(tag_list, exclude_tags)
     logger.info(f"Search yielded {len(results)} results")
     for i in results:
-        shutil.copy(i, results_path)
+        shutil.copy(os.path.join(base_path, i), results_path)
 
 
 def update():

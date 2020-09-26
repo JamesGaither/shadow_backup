@@ -12,11 +12,12 @@ Shadow Backup is a WIP photo backup and indexing tool written in python3.
 I am working on this project alone in my spare time between a full-time job, other hobbies, and other projects, so it will take a bit of time before it is complete. Currently it is in an early Alpha state and very much subject to change. I work on develop branch and push stable builds (or at least as stable as you can get in alpha) to master and try to tag what I consider major releases with tag numbers.  
 I am open to any suggestions, so please drop me a message or even better a pull request to help out.
 
-## Recent News (7/6/20)
+## Recent News (9/26/20)
 
 * I have decided to drop pipenv support in favor of venv and a requirements.txt format. Pipenv at the moment just has too many issues and takes up too much of my time trying to keep it working on my system. venv just works as expected.
 * Major overhaul in progress for how tags are edited. I have decided to drop my attempt at a GUI and instead implement an update function. This allows the user to pull any photos to a working directory, make any changes they want, and then run update. This will (using the photo name) match the entry in the db, hash the photo, if changed, it will remove the old photo from the archive, make any updates to the DB, and store the new photo in archive.
 * With the update to the tag section, I have decided the tags with added to the metadata of the photos as well as the DB. This means on tag entry, it will write the tags to the metadata, and on update will pull the tag info from the metadata. (WIP)
+* Work recently has been keeping me quite busy recently. Looking to get back into this project soon. Still open to any pull requests
 
 ## What Shadow Backup does and how it's different from what is on the market
 
