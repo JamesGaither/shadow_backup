@@ -12,9 +12,9 @@ import configparser
 import hashlib
 import shutil
 import exifread
+import logging
 from datetime import datetime
 from pathlib import Path
-import subprocess
 
 # custom modules
 from modules.dbhandler import dbhandler
@@ -24,10 +24,8 @@ from modules.gui import gui
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--process", action="store_true",
                     help="reads all photos for processing")
-parser.add_argument("-a", "--archive", action="store_true",
-                    help="pushes non-archived photos to archive")
-parser.add_argument("-v", "--verbose", action="store_true",
-                    help="prints detailed information to terminal")
+# parser.add_argument("-v", "--verbose", action="store_true",
+#                    help="prints detailed information to terminal")
 parser.add_argument("-i", "--inserttags", action="store_true",
                     help="activates the gui for inputting tags")
 parser.add_argument("--pullphoto", action="store_true",
@@ -37,11 +35,26 @@ parser.add_argument("-t", "--tags", nargs='+',
                     " option -p")
 parser.add_argument("-e", "--exclude", nargs='+',
                     help="list of tags to exclude when pulling photos")
+parser.add_argument("-u", "--update", action="store_true", help="Coming Soon")
 args = parser.parse_args()
 
 # Verify at lease one argument is given
 if not any(vars(args).values()):
     parser.error('Must provide at least 1 argument')
+
+# Setup logging
+logfile = Path('shadow.log')
+log_level = 'DEBUG'
+logging.basicConfig(filename=logfile, datefmt="%Y-%m-%d %H:%M:%S",
+                    format=('%(asctime)s  %(name)s %(levelname)-10s '
+                            '%(message)-10s'))
+logging.StreamHandler()
+logger = logging.getLogger(__name__)
+logger.setLevel(log_level)
+handler = logging.StreamHandler()
+handler.setLevel('DEBUG')
+logger.addHandler(handler)
+logger.info('testing 12')
 
 # Pull Config info
 config = configparser.ConfigParser()
@@ -54,15 +67,8 @@ results_path = os.path.join(base_path, Path(config['PATH']['results']))
 db_path = os.path.join(base_path, Path(config['GENERAL']['db_path']))
 work_folder = os.path.join(base_path, Path(config['PATH']['work_folder']))
 reject_path = os.path.join(base_path, Path(config['PATH']['reject']))
-sevenz_path = Path(config['ARCHIVE']['sevenz_path'])
-vol_size = config['ARCHIVE']['vol_size']
-archive_pw = config['ARCHIVE']['password']
-archive_out = Path(config['ARCHIVE']['output'])
-
-
 db = dbhandler(db_path)
-valid_extensions = ['.cr2', '.jpg', '.jpeg', '.png']
-archive_name = "1"
+valid_extensions = ['.tif', '.cr2', '.jpg', '.jpeg', '.png']
 allpics = []
 
 
@@ -90,34 +96,25 @@ def process():
         original_name, extension = os.path.splitext(pic)
         extension = extension.lower()
         if extension not in valid_extensions:
-            if args.verbose:
-                print(f"{pic} does not have a valid photo extension")
+            logger.info(f"{pic} does not have a valid photo extension")
             reject(pic)
-            continue
-
-        hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
-        # #new_name = hash + extension.lower()
 
         # Check if picture has been processed
+        hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
         hashcheck = db.hashcheck(hash)
         if hashcheck:
-            if args.verbose:
-                print(f"{pic} has already been processed with photo ID:"
-                      f"{hashcheck}")
+            logger.info(f"{pic} has already been processed with photo ID:"
+                        f"{hashcheck}")
             reject(pic)
-            continue
 
         try:
             date_taken = datetime.strptime(get_date_taken(pic),
                                            '%Y:%m:%d %H:%M:%S')
             sub_filepath = os.path.join(db_p_storage,
                                         datetime.strftime(date_taken, '%Y'),
-                                        datetime.strftime(date_taken, '%m'),
-                                        datetime.strftime(date_taken, '%d'))
-        except Exception as e:
-            if args.verbose:
-                print(f"Error raised on import of EXIF tag for {pic}")
-                print(f"Error: {e}")
+                                        datetime.strftime(date_taken, '%m'))
+        except Exception:
+            logger.info(f"Error raised on import of EXIF tag for {pic}")
             date_taken = None
             sub_filepath = os.path.join(db_p_storage, 'nodate')
 
@@ -131,33 +128,19 @@ def process():
             for tag in tag_list:
                 tag_id = db.insert_tag(tag)
                 db.insert_phototag(photo_id, tag_id)
+        else:
+            tag_id = db.insert_tag('none')
+            db.insert_phototag(photo_id, tag_id)
+
         # Handle the filesystem side of the photo
         if not os.path.exists(filepath):
             os.makedirs(filepath)
-        if args.verbose:
-            print(f"Moving {pic} to {os.path.join(filepath,new_name)}")
+        logger.info(f"Moving {pic} to {os.path.join(filepath,new_name)}")
         shutil.move(pic, os.path.join(filepath, new_name))
 
 
-# Push unarchived photos to archive
-def archive():
-    if args.verbose:
-        print("Begin archiving")
-    nonarchived_files = db.archive_query()
-    for photo_path in nonarchived_files:
-        shutil.copy(photo_path, work_folder)
-    archive_fullpath = os.path.join(archive_out, archive_name)
-    archive_command = (r'"{}" a -v"{}" -t7z -mhe=on -mx9 -p"{}" "{}" "{}"'
-                       .format(sevenz_path, vol_size, archive_pw,
-                               archive_fullpath, work_folder))
-    subprocess.run(archive_command)
-    for subdir, dirs, file in os.walk(work_folder):
-        for archive_picture in file:
-            db.insert_archive(archive_picture, str(archive_fullpath))
-
-
-# Pull a photo to a given directory given a list of tags
 def pull_photo():
+    '''Pull a photo to a given directory given a list of tags'''
     if not args.tags:
         parser.error("The --pullphoto argument requires the -t argument "
                      "followed by at least one tag to search")
@@ -167,19 +150,23 @@ def pull_photo():
     if not os.path.exists(results_path):
         os.makedirs(results_path)
     results = db.pull_photo(tag_list, exclude_tags)
-    print(f"Search yielded {len(results)} results")
+    logger.info(f"Search yielded {len(results)} results")
     for i in results:
-        shutil.copy(i, results_path)
+        shutil.copy(os.path.join(base_path, i), results_path)
+
+
+def update():
+    '''Pull photos from working directory and update existing images'''
 
 
 if __name__ == '__main__':
     if args.process:
         process()
-    if args.archive:
-        archive()
     if args.inserttags:
         gui = gui(db_path, base_path)
         gui.photo_display()
         gui.window.mainloop()
     if args.pullphoto:
         pull_photo()
+    if args.update:
+        update()
