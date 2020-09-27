@@ -54,7 +54,6 @@ logger.setLevel(log_level)
 handler = logging.StreamHandler()
 handler.setLevel('DEBUG')
 logger.addHandler(handler)
-logger.info('testing 12')
 
 # Pull Config info
 config = configparser.ConfigParser()
@@ -69,14 +68,20 @@ work_folder = os.path.join(base_path, Path(config['PATH']['work_folder']))
 reject_path = os.path.join(base_path, Path(config['PATH']['reject']))
 db = dbhandler(db_path)
 valid_extensions = ['.tif', '.cr2', '.jpg', '.jpeg', '.png']
+
+# General variables
 allpics = []
+reject_count = 0
 
 
 def reject(file):
     '''Moves a file that is rejected to the rejected path'''
+    global reject_count
+    reject_count += 1
     if not os.path.exists(reject_path):
         os.makedirs(reject_path)
-    shutil.move(file, reject_path)
+    file_name = os.path.basename(file)
+    shutil.move(file, f'{reject_path}/{file_name}.{reject_count}')
 
 
 # Pulls a date taken from photo (if any)
