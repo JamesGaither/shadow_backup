@@ -98,6 +98,7 @@ def process():
         if extension not in valid_extensions:
             logger.info(f"{pic} does not have a valid photo extension")
             reject(pic)
+            continue
 
         # Check if picture has been processed
         hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
@@ -106,6 +107,7 @@ def process():
             logger.info(f"{pic} has already been processed with photo ID:"
                         f"{hashcheck}")
             reject(pic)
+            continue
 
         try:
             date_taken = datetime.strptime(get_date_taken(pic),
