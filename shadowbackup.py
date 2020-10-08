@@ -66,6 +66,7 @@ results_path = os.path.join(base_path, Path(config['PATH']['results']))
 db_path = os.path.join(base_path, Path(config['GENERAL']['db_path']))
 work_folder = os.path.join(base_path, Path(config['PATH']['work_folder']))
 reject_path = os.path.join(base_path, Path(config['PATH']['reject']))
+update_path = os.path.join(base_path, Path(config['PATH']['update']))
 db = dbhandler(db_path)
 valid_extensions = ['.tif', '.cr2', '.jpg', '.jpeg', '.png']
 
@@ -163,7 +164,34 @@ def pull_photo():
 
 
 def update():
-    '''Pull photos from working directory and update existing images'''
+    '''Pull photos from update directory and update existing images'''
+    for subdir, dirs, files in os.walk(update_path):
+        for file in files:
+            allpics.append(os.path.join(subdir, file))
+    for pic in allpics:
+        path, extension = os.path.splitext(pic)
+        name = os.path.split(pic)[1]
+        extension = extension.lower()
+        if extension not in valid_extensions:
+            logger.info(f"{pic} does not have a valid photo extension")
+            reject(pic)
+            continue
+        try:
+            photo_id = db.pull_id(name)[0]
+        except TypeError:
+            logger.info(f'{name} has not been processed before, please process'
+                        f' instead of updating')
+            continue
+
+        hash = hashlib.md5(open(pic, 'rb').read()).hexdigest()
+
+        # Let's see if any changes were made
+        if db.compare_hash(photo_id, hash):
+            logger.info(f'{name} has not changed since last update')
+            continue
+
+        # hashcheck = db.hashcheck(hash)
+
 
 
 if __name__ == '__main__':

@@ -156,10 +156,24 @@ class dbhandler:
                 WHERE photo_id=?''', (photo_id,))
         return self.c.fetchone()
 
+    def pull_id(self, photo_name):
+        self.c.execute('''
+                SELECT photo.photo_id from photo
+                WHERE name=?''', (photo_name,))
+        return self.c.fetchone()
+
     # WIP delete functionality
     def delete_photo(self, photo_name):
         print("non-functional for now")
         return
+
+    def compare_hash(self, photo_id, new_hash):
+        self.c.execute("SELECT hash FROM photo WHERE photo_id=?", (photo_id,))
+        original_hash = self.c.fetchone()
+        if original_hash[0] == new_hash:
+            return True
+        else:
+            return False
 
 
 if __name__ == '__main__':
