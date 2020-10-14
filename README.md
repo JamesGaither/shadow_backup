@@ -14,9 +14,9 @@ I am open to any suggestions, so please drop me a message or even better a pull 
 
 ## Recent News (9/26/20)
 
-* I have decided to drop pipenv support in favor of venv and a requirements.txt format. Pipenv at the moment just has too many issues and takes up too much of my time trying to keep it working on my system. venv just works as expected.
-* Major overhaul in progress for how tags are edited. I have decided to drop my attempt at a GUI and instead implement an update function. This allows the user to pull any photos to a working directory, make any changes they want, and then run update. This will (using the photo name) match the entry in the db, hash the photo, if changed, it will remove the old photo from the archive, make any updates to the DB, and store the new photo in archive.
-* With the update to the tag section, I have decided the tags with added to the metadata of the photos as well as the DB. This means on tag entry, it will write the tags to the metadata, and on update will pull the tag info from the metadata. (WIP)
+* I have decided to drop pipenv support in favor of venv and a requirements.txt. Pipenv at the moment just has too many issues and takes up too much of my time trying to keep it working on my system. Venv just works as expected.
+* Major overhaul in progress for how tags are edited. I have decided to drop my attempt at a GUI and instead implement an update function. This allows the user to pull any photos to a working directory, make any changes they want, and then run update. This will (using the photo name) match the entry in the db, hash the photo, if changed, remove the old photo from the archive, make any updates to the DB, and store the new photo in archive.
+* With the update to the tag section, I have decided the tags will be added to the metadata of the photos as well as the DB. This means on tag entry, it will write the tags to the metadata, and on update will pull the tag info from the metadata. (WIP)
 * Work recently has been keeping me quite busy recently. Looking to get back into this project soon. Still open to any pull requests
 
 ## What Shadow Backup does and how it's different from what is on the market
@@ -26,8 +26,7 @@ This software's overall goal is to give the user a simple, clean, fully transpar
 1. Have the index listed separately from the photos to accommodate ease of backup and cross platform support [implemented via SQLite]
 2. Ensure maximum privacy by ensuring:
     1. All code is run locally on your machine with no statistics tracking or any such privacy breeching methods [implemented]
-    2. Backups (whether they leave your computer or not) are encrypted [implemented]
-    3. A fully open codebase so you might review all code that is run [implemented]
+    2. A fully open codebase so you might review all code that is run [implemented]
 3. Pull any subset of photos via tags [Partially implemented]
 4. Not rewrite code that others have available online that has been tested multiple times and proven.
 5. Have access for any developer to expand on the core functionality of Shadow Backup [implemented by using SQLite DB for indexing]
@@ -35,10 +34,10 @@ This software's overall goal is to give the user a simple, clean, fully transpar
 ## How to use Shadow Backup
 
 It is suggested to only use Shadow Backup if you are familiar with Python at this point (though the goal is to make shadow backup available for non python users in the future).  
-Shadow backup is meant to be used as a photo archive tool. it was designed with the expectation that you will edit any photos before running them through it. Currently, Shadow backup does not handle updating photos that were already processed very well. A general process I followed for designing Shadow Backup is listed below:  
+Shadow backup is meant to be used as a photo archive tool. it was designed with the expectation that you will edit any photos before running them through it. Currently, Shadow backup does not handle updating photos that were already processed very well (This is in the process of being changed, see Recent News). A general process I follow for designing Shadow Backup is listed below:  
 
 1. Upload a fresh batch of photos to an input folder
-2. make any needed edits using your editor of choice (I use GIMP) and delete any photos you don't want
+2. make any needed edits using your editor of choice (I use GIMP) and delete any photos you don't want (While still my preference, I am adding in an update function that will allow edits even after upload, see Recent News above)
 3. upload the batch of photos using shadow backup and the -t option to tag new photos with something that describes that batch (e.g. summer_vacation_2019)  
 
 Below is how to install Shadow Backup:  
